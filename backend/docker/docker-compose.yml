@@ -1,0 +1,27 @@
+version: '3.0'
+
+services:
+  pizza-system:
+    build:
+      context: ..
+    restart: always
+    depends_on:
+      - mysqldb
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:mysql://mysqldb:3306/pizza_system?useSSL=false&allowPublicKeyRetrieval=true",
+        "spring.datasource.username" : "root",
+        "spring.datasource.password" : "123456",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL8Dialect",
+        "spring.jpa.hibernate.ddl-auto" : "update"
+      }'
+  mysqldb:
+    container_name: mysqldb
+    image: mysql:8
+    platform: linux/x86_64
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=pizza_system
+    ports:
+      - "3306:3306"
