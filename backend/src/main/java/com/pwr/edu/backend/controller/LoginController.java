@@ -19,6 +19,11 @@ public class LoginController {
     private final LoginService loginService;
 
 
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "UP";
+    }
+
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public LoginResponse login(@RequestBody LoginRequest request) {

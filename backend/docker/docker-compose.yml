@@ -5,15 +5,19 @@ services:
     build:
       context: ..
     restart: always
+    ports:
+      - "8080:8080"
     depends_on:
       - mysqldb
+      - maildev
     environment:
       SPRING_APPLICATION_JSON: '{
         "spring.datasource.url"  : "jdbc:mysql://mysqldb:3306/pizza_system?useSSL=false&allowPublicKeyRetrieval=true",
         "spring.datasource.username" : "root",
         "spring.datasource.password" : "123456",
         "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL8Dialect",
-        "spring.jpa.hibernate.ddl-auto" : "update"
+        "spring.jpa.hibernate.ddl-auto" : "create-drop",
+        "spring.mail.host" : "maildev"
       }'
   mysqldb:
     container_name: mysqldb
@@ -25,3 +29,13 @@ services:
       - MYSQL_DATABASE=pizza_system
     ports:
       - "3306:3306"
+  maildev:
+    container_name: maildev
+    image: maildev/maildev
+    restart: always
+    environment:
+      - MAILDEV_WEB_PORT=1080
+      - MAILDEV_SMTP_PORT=1025
+    ports:
+      - "1080:1080"
+      - "1025:1025"
