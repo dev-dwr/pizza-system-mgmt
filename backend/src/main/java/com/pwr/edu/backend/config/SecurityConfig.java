@@ -8,12 +8,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private static final String[] AUTH_WHITELIST = {
-            "/swagger-resources/**",
-            "/v2/api-docs",
-            "/webjars/**",
-            "/swagger-ui/index.html"
-    };
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
