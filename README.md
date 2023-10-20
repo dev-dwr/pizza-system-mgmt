@@ -11,7 +11,7 @@ W Polsce popyt na pizzerie stale się zwiększa. Wielkie lokale otrzymują ogrom
 - Powiadomienia e-mailowe
 
 ### Backend
-- Java 11
+- Java 17
 - Spring Boot
 - Spring Security
 - Spring Mail
