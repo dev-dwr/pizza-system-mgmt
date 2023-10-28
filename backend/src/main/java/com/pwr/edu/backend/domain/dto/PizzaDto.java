@@ -5,6 +5,7 @@ import com.pwr.edu.backend.domain.pizza.Ingredients;
 import com.pwr.edu.backend.domain.pizza.Sauce;
 import com.pwr.edu.backend.domain.pizza.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
 public class PizzaDto {
     private Long id;
