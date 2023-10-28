@@ -1,5 +1,7 @@
 package com.pwr.edu.backend.domain.pizza;
 
+import com.pwr.edu.backend.domain.security.AppUser;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,8 +31,17 @@ public class Pizza {
     private Size size;
 
     @Enumerated(EnumType.STRING)
+    private Status currentStatus = Status.INIT;
+
+    @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Ingredients.class)
     private List<Ingredients> ingredientsList;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "app_user")
+    @ApiModelProperty(hidden = true)
+    private AppUser user;
+
 
     private int price;
 

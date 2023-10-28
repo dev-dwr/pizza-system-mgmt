@@ -59,7 +59,9 @@ class PizzaControllerTest {
                 .build();
 
         MockHttpServletResponse response = mockMvc.perform(
-                post("http://localhost:8080/api/v1/pizza/create").contentType(MediaType.APPLICATION_JSON).content(
+                post("http://localhost:8080/api/v1/pizza/create").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer 123-321-123-321")
+                        .content(
                         jsonSuperHero.write(pizzaUnderTest).getJson()
                 )).andReturn().getResponse();
 
