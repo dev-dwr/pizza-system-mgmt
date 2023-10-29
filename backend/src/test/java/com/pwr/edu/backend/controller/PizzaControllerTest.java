@@ -85,7 +85,7 @@ class PizzaControllerTest {
 
     @Test
     void getPizzaById() throws Exception {
-        PizzaDto pizza1 = new PizzaDto();
+        Pizza pizza1 = new Pizza();
         pizza1.setId(1L);
         when(pizzaService.findPizzaById(anyLong())).thenReturn(pizza1);
 

@@ -4,6 +4,7 @@ import com.pwr.edu.backend.domain.dto.PizzaDto;
 import com.pwr.edu.backend.domain.pizza.Pizza;
 import com.pwr.edu.backend.service.PizzaService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,13 +28,19 @@ public class PizzaController {
     }
 
     @GetMapping("/pizza/{id}")
-    public PizzaDto getPizzaById(@PathVariable Long id) {
+    public Pizza getPizzaById(@PathVariable Long id) {
         return pizzaService.findPizzaById(id);
     }
 
     @GetMapping("/pizza/own")
     public List<PizzaDto> getUsersAllPizzas(@RequestHeader("Authorization") String bearerToken) {
         return pizzaService.findUsersAllPizzas(getJwt(bearerToken));
+    }
+
+    @PutMapping("/pizza/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void changePizzaStatus(@PathVariable Long id, @RequestBody Pizza pizza) {
+        pizzaService.changePizzaStatus(id, pizza);
     }
 
     @DeleteMapping("/pizza/delete/{id}")

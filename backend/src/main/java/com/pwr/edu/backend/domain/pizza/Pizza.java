@@ -1,5 +1,6 @@
 package com.pwr.edu.backend.domain.pizza;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pwr.edu.backend.domain.security.AppUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -40,6 +41,7 @@ public class Pizza {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "app_user")
     @ApiModelProperty(hidden = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AppUser user;
 
 
