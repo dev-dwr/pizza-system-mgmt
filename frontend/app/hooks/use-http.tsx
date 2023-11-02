@@ -1,0 +1,72 @@
+import { useReducer, useCallback } from "react";
+
+interface HttpState {
+  status: string;
+  data?: any;
+  error?: string;
+}
+
+const httpReducer = (state: HttpState, action: any) => {
+  if (action.type === "SEND") {
+    return {
+      status: "loading",
+    };
+  }
+
+  if (action.type === "SUCCESS") {
+    return {
+      data: action.responseData,
+      status: "success",
+    };
+  }
+
+  if (action.type === "ERROR") {
+    return {
+      error: action.errorMessage,
+      status: "error",
+    };
+  }
+
+  if (action.type === "CLEAR") {
+    return {
+      status: "pending",
+    };
+  }
+
+  return state;
+};
+
+export default function useHttp(
+  requestFunction: (data?: any) => Promise<any>,
+  startWithLoading = false
+) {
+  const [httpState, dispatch] = useReducer(httpReducer, {
+    status: startWithLoading ? "loading" : "pending",
+  });
+
+  const sendRequest = useCallback(
+    async (requestData?: any) => {
+      dispatch({ type: "SEND" });
+      try {
+        const responseData = await requestFunction(requestData);
+        dispatch({ type: "SUCCESS", responseData });
+      } catch (error: any) {
+        dispatch({
+          type: "ERROR",
+          errorMessage: error.message || "Something went wrong!",
+        });
+      }
+    },
+    [requestFunction]
+  );
+
+  const clear = useCallback(() => {
+    dispatch({ type: "CLEAR" });
+  }, [])
+
+  return {
+    sendRequest,
+    clear,
+    ...httpState,
+  };
+}

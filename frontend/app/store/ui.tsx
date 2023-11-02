@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 
 interface UI {
   user: string;
@@ -20,9 +20,19 @@ interface ProviderProps {
 export default function UIContextProvider({ children }: ProviderProps) {
   const [user, setUser] = useState<string>("");
 
+  useEffect(() => {
+    const token = localStorage.getItem("user");
+    if (token) setUser(token);
+  }, []);
+
+  const login = useCallback((user: string) => {
+    localStorage.setItem("user", user);
+    setUser(user);
+  }, []);
+
   return (
     <UIContext.Provider
-      value={{ user, login: setUser, logout: () => setUser("") }}
+      value={{ user, login, logout: () => setUser("") }}
     >
       {children}
     </UIContext.Provider>
