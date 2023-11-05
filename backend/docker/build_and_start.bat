@@ -12,7 +12,8 @@ docker-compose rm -v || set "error=1"
 REM Build the top-level project in order to have updated versions of the dependencies in our .jar
 REM but skip the tests to save some time. We should be allowed to assume these tests have run before the
 REM integration-tests are run.
-(cd ..\ && mvn clean install -DskipTests) || set "error=1"
+cd ..
+mvn clean install -DskipTests || set "error=1"
 
 docker-compose build || set "error=1"
 docker-compose up --force-recreate || set "error=1"

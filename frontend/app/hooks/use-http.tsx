@@ -36,11 +36,13 @@ const httpReducer = (state: HttpState, action: any) => {
   return state;
 };
 
-export default function useHttp(
-  requestFunction: (data?: any) => Promise<any>,
+export default function useHttp<T>(
+  requestFunction: (data?: any) => Promise<T>,
   startWithLoading = false
 ) {
-  const [httpState, dispatch] = useReducer(httpReducer, {
+  const [httpState, dispatch] = useReducer<
+    (state: HttpState, action: any) => HttpState
+  >(httpReducer, {
     status: startWithLoading ? "loading" : "pending",
   });
 
@@ -62,7 +64,7 @@ export default function useHttp(
 
   const clear = useCallback(() => {
     dispatch({ type: "CLEAR" });
-  }, [])
+  }, []);
 
   return {
     sendRequest,

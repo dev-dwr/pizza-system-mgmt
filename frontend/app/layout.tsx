@@ -18,9 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ThemeRegistry options={{ key: "mui" }}>
-          <UIContextProvider>
-            <Layout>{children}</Layout>
-          </UIContextProvider>
+            <UIContextProvider>
+              <Layout>{children}</Layout>
+            </UIContextProvider>
         </ThemeRegistry>
       </body>
     </html>
