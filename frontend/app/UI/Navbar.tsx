@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { UIContext } from "../store/ui";
 
 declare module "@mui/material/AppBar" {
   interface AppBarPropsColorOverrides {
@@ -49,6 +51,8 @@ function ActionsSpeedDial() {
 }
 
 export default function Navbar() {
+  const { user } = useContext(UIContext);
+
   return (
     <AppBar position="fixed" color="mgrey">
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -61,7 +65,9 @@ export default function Navbar() {
           display={{ xs: "none", lg: "flex" }}
           gap={{ lg: 5, xl: 10 }}
         >
-          <Link href="/account">Account</Link>
+          <Link href={user ? "/account" : "/login"}>
+            {user ? "My Account" : "Login"}
+          </Link>
         </Stack>
         <Stack
           position="absolute"
