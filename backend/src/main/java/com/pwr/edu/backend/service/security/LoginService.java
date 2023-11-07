@@ -36,6 +36,10 @@ public class LoginService {
         AppUser user = repository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException(String.format("%s was not found in database", email)));
 
+        if(!user.isEnabled()){
+            throw new IllegalStateException("Please confirm your e-mail");
+        }
+
         if (!bCryptPasswordEncoder.matches(request.password(), user.getPassword())){
             throw new IllegalStateException("Invalid password");
         }
