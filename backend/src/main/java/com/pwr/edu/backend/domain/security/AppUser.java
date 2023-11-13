@@ -1,20 +1,19 @@
 package com.pwr.edu.backend.domain.security;
 
+import com.pwr.edu.backend.domain.pizza.Pizza;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 
 @Entity
 public class AppUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "appuser_generator")
-    @SequenceGenerator(name="appuser_generator", sequenceName = "appuser_seq", allocationSize = 1)
+    @SequenceGenerator(name = "appuser_generator", sequenceName = "appuser_seq", allocationSize = 1)
     private Long id;
     private String firstname;
     private String lastname;
@@ -23,6 +22,9 @@ public class AppUser implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private AppUserRole appUserRole;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pizza> pizza = new ArrayList<>();
 
     private Boolean locked = false;
     private Boolean enabled = false;

@@ -45,7 +45,7 @@ public class RegistrationService {
                 request.lastname(),
                 request.email(),
                 request.password(),
-                AppUserRole.USER
+                request.userRole()
         ));
 
     }
