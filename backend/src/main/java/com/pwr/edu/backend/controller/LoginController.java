@@ -36,4 +36,5 @@ public class LoginController {
         loginService.logoutUser(token);
         return "logged out";
     }
+
 }

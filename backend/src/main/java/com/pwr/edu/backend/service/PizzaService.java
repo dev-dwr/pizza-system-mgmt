@@ -2,6 +2,7 @@ package com.pwr.edu.backend.service;
 
 import com.pwr.edu.backend.domain.dto.PizzaDto;
 import com.pwr.edu.backend.domain.pizza.Pizza;
+import com.pwr.edu.backend.domain.security.AppUser;
 import com.pwr.edu.backend.domain.security.ConfirmationToken;
 import com.pwr.edu.backend.email.EmailSender;
 import com.pwr.edu.backend.repository.PizzaRepository;
@@ -94,5 +95,10 @@ public class PizzaService {
                 emailBuilder.changedStatusEmail(pizza.getCurrentStatus())
         );
 
+    }
+
+    public AppUser getCurrentUser(String jwt) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
+        return confirmationToken.getAppUser();
     }
 }
