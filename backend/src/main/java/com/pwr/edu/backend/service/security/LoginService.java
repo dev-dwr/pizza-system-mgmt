@@ -54,7 +54,5 @@ public class LoginService {
                 new UsernameNotFoundException((String.format("%s token was not found in database", token.getToken()))));
         AppUser appUser = confirmationToken.getAppUser();
         appUser.setLoggedIn(false);
-
     }
-
 }

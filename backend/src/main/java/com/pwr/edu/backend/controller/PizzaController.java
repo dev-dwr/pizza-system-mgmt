@@ -2,6 +2,7 @@ package com.pwr.edu.backend.controller;
 
 import com.pwr.edu.backend.domain.dto.PizzaDto;
 import com.pwr.edu.backend.domain.pizza.Pizza;
+import com.pwr.edu.backend.domain.security.AppUser;
 import com.pwr.edu.backend.service.PizzaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,13 @@ public class PizzaController {
     public void deletePizzaById(@PathVariable Long id, @RequestHeader("Authorization") String bearerToken) {
         String jwt = getJwt(bearerToken);
         pizzaService.deletePizzaById(id, jwt);
+    }
+
+    @GetMapping("/me")
+    @ResponseStatus(HttpStatus.OK)
+    public AppUser getCurrentLoggedInUser(@RequestHeader("Authorization") String bearerToken) {
+        String jwt = getJwt(bearerToken);
+        return pizzaService.getCurrentUser(jwt);
     }
 
     private String getJwt(String bearerToken) {
