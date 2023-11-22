@@ -1,26 +1,20 @@
 "use client";
 import { useContext, useEffect } from "react";
 import useHttp from "../hooks/use-http";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  LinearProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
-import RegisterForm from "../components/RegisterForm";
-import { User } from "../utils/types";
+import { Button, Stack } from "@mui/material";
 import { UIContext } from "../store/ui";
 import { enqueueSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { logout } from "../utils/api";
 
 export default function Account() {
-  const { push } = useRouter();
+  const { push, replace } = useRouter();
   const { user, logout: deleteUser } = useContext(UIContext);
   const { sendRequest, status, error } = useHttp(logout);
+
+  useEffect(() => {
+    if (!user) replace("/login");
+  }, [user]);
 
   useEffect(() => {
     if (status === "error") {
