@@ -63,7 +63,7 @@ export default function Navbar() {
           direction="row"
           justifyContent="space-between"
           display={{ xs: "none", sm: "flex" }}
-          gap={{ lg: 5, xl: 10 }}
+          gap={{ xs: 5, xl: 10 }}
         >
           {user && <Link href="/orders">Orders</Link>}
           <Link href={user ? "/account" : "/login"}>

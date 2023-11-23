@@ -9,7 +9,7 @@ export const WHITE = "#f2efed";
 export const DEFAULT_PIZZA = {
   name: "",
   dough: Dough.ITALIAN,
-  size: Size.MEGA,
+  size: Size.MEGA_LARGE,
   sauce: Sauce.TOMATO_CHEESE,
   ingredientsList: [],
 };

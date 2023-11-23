@@ -1,6 +1,6 @@
 import { DEFAULT_PIZZA } from "./constants";
 import { Pizza, Status, User } from "./types";
-import { convertToPizzaDao } from "./utils";
+import { PizzaDtoToPizza, PizzaToPizzaDto } from "./utils";
 
 export async function login(user: User) {
   const response = await fetch(
@@ -71,14 +71,12 @@ export async function sendOrder({
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(convertToPizzaDao(pizza)),
+      body: JSON.stringify(PizzaToPizzaDto(pizza)),
     }
   );
 
   const data = await response.json();
   if (!response.ok) throw new Error(data.message);
-
-  return data.price as number;
 }
 
 export async function removeOrder({
@@ -118,7 +116,7 @@ export async function changeOrderStatus({
         method: "PUT",
         "Content-Type": "application/json",
         body: JSON.stringify(
-          convertToPizzaDao({ ...DEFAULT_PIZZA, currentStatus: status })
+          PizzaToPizzaDto({ ...DEFAULT_PIZZA, currentStatus: status })
         ),
       },
     }
@@ -144,8 +142,11 @@ export async function getUserData(token: string) {
 }
 
 export async function retrieveOrders(token?: string) {
-  if (!token) return retrieveAllOrders();
-  return retrieveUserOrders(token);
+  let orders;
+  if (!token) orders = await retrieveAllOrders();
+  else orders = await retrieveUserOrders(token);
+
+  return orders.map((order) => PizzaDtoToPizza(order));
 }
 
 async function retrieveUserOrders(token: string) {

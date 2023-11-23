@@ -13,10 +13,6 @@ export default function Account() {
   const { sendRequest, status, error } = useHttp(logout);
 
   useEffect(() => {
-    if (!user) replace("/login");
-  }, [user]);
-
-  useEffect(() => {
     if (status === "error") {
       enqueueSnackbar(error, { variant: "error" });
     } else if (status === "success") {

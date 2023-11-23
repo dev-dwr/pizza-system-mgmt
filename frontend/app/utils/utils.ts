@@ -1,7 +1,7 @@
 import { Dough, Ingredient, Pizza, Sauce, Size, Status } from "./types";
 
 export function getDough(value: string): Dough {
-  switch (value) {
+  switch (value.toLowerCase()) {
     default:
     case "italian":
       return Dough.ITALIAN;
@@ -12,7 +12,7 @@ export function getDough(value: string): Dough {
   }
 }
 export function getIngredient(value: string): Ingredient {
-  switch (value) {
+  switch (value.toLowerCase()) {
     default:
     case "ham":
       return Ingredient.HAM;
@@ -25,6 +25,7 @@ export function getIngredient(value: string): Ingredient {
     case "SALAMI":
       return Ingredient.SALAMI;
     case "chilli":
+    case "chili":
       return Ingredient.CHILLI;
     case "meat":
       return Ingredient.MEAT;
@@ -34,7 +35,7 @@ export function getIngredient(value: string): Ingredient {
 }
 
 export function getSize(value: string): Size {
-  switch (value) {
+  switch (value.toLowerCase()) {
     case "small":
       return Size.SMALL;
     case "medium":
@@ -43,18 +44,20 @@ export function getSize(value: string): Size {
       return Size.LARGE;
     default:
     case "mega":
-      return Size.MEGA;
+    case "mega_large":
+      return Size.MEGA_LARGE;
   }
 }
 
 export function getSauce(value: string): Sauce {
-  switch (value) {
+  switch (value.toLowerCase()) {
     case "tomato":
       return Sauce.TOMATO;
     case "cheese":
       return Sauce.CHEESE;
     default:
     case "tomato with cheese":
+    case "tomato_cheese":
       return Sauce.TOMATO_CHEESE;
     case "paprika":
       return Sauce.PAPRIKA;
@@ -62,7 +65,7 @@ export function getSauce(value: string): Sauce {
 }
 
 export function getStatus(value: string): Status {
-  switch (value) {
+  switch (value.toLowerCase()) {
     case "init":
       return Status.INIT;
     case "start":
@@ -93,9 +96,9 @@ export function getStatuses() {
   return Object.values(Status).filter((key) => isNaN(Number(key)));
 }
 
-export function convertToPizzaDao(pizza: Pizza) {
+export function PizzaToPizzaDto(pizza: Pizza) {
   const size = (
-    pizza.size === Size.MEGA ? "MEGA_LARGE" : pizza.size
+    pizza.size === Size.MEGA_LARGE ? "MEGA_LARGE" : pizza.size
   ).toUpperCase();
 
   const sauce = (
@@ -107,8 +110,27 @@ export function convertToPizzaDao(pizza: Pizza) {
     dough: pizza.dough.toUpperCase(),
     size,
     sauce,
-    ingredientsList: pizza.ingredientsList.map((ingredient) =>
-      ingredient.toUpperCase()
-    ),
+    ingredientsList: pizza.ingredientsList
+      .map((ingredient) => ingredient.toUpperCase())
+      .sort(),
   };
+}
+
+export function PizzaDtoToPizza(pizza: any): Pizza {
+  return {
+    id: pizza.id,
+    name: pizza.name,
+    dough: getDough(pizza.dough),
+    size: getSize(pizza.size),
+    sauce: getSauce(pizza.sauce),
+    ingredientsList: (pizza.ingredientsList as any[])
+      .map((ingredient) => getIngredient(ingredient))
+      .sort(),
+    price: pizza.price,
+    currentStatus: pizza.currentStatus,
+  };
+}
+
+export function capitalize(word: string) {
+  return word[0].toUpperCase() + word.substring(1);
 }

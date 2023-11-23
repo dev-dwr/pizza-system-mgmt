@@ -14,14 +14,13 @@ export default function Home() {
   const {
     sendRequest: addPizza,
     status,
-    error,
-    data: price,
+    error
   } = useHttp(sendOrder);
 
   useEffect(() => {
     if (status === "error") enqueueSnackbar(error, { variant: "error" });
     else if (status === "success")
-      enqueueSnackbar(`Successfully ordered Pizza for ${price}USD`, {
+      enqueueSnackbar("Pizza ordered :D", {
         variant: "success",
       });
   }, [status]);

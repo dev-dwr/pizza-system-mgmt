@@ -36,10 +36,6 @@ export default function Login() {
   } = useHttp(register);
 
   useEffect(() => {
-    if (user) replace("/account");
-  }, [user]);
-
-  useEffect(() => {
     if (data) {
       saveUser(data);
       clearLogin();

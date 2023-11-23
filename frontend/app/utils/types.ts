@@ -21,13 +21,13 @@ export enum Size {
   SMALL = "small",
   MEDIUM = "medium",
   LARGE = "large",
-  MEGA = "mega",
+  MEGA_LARGE = "mega",
 }
 
 export enum Sauce {
   TOMATO = "tomato",
   CHEESE = "cheese",
-  TOMATO_CHEESE = "tomato with cheese",
+  TOMATO_CHEESE = "tomato and cheese",
   PAPRIKA = "paprika",
 }
 
@@ -38,7 +38,7 @@ export enum Ingredient {
   MUSHROOMS = "mushrooms",
   TOMATO = "tomato",
   PINEAPPLE = "pineapple",
-  CHILLI = "chilli",
+  CHILLI = "chili",
   MEAT = "meat",
 }
 
