@@ -81,6 +81,7 @@ public class PizzaService {
                 .name(pizza.getName())
                 .price(pizza.getPrice())
                 .id(pizza.getId())
+                .currentStatus(pizza.getCurrentStatus().toString())
                 .build();
     }
 
