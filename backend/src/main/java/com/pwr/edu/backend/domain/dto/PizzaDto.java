@@ -1,9 +1,6 @@
 package com.pwr.edu.backend.domain.dto;
 
-import com.pwr.edu.backend.domain.pizza.Dough;
-import com.pwr.edu.backend.domain.pizza.Ingredients;
-import com.pwr.edu.backend.domain.pizza.Sauce;
-import com.pwr.edu.backend.domain.pizza.Size;
+import com.pwr.edu.backend.domain.pizza.*;
 import com.pwr.edu.backend.domain.security.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,4 +22,5 @@ public class PizzaDto {
     private int price;
     private AppUser appUser;
     private List<Ingredients> ingredientsList;
+    private String currentStatus;
 }
