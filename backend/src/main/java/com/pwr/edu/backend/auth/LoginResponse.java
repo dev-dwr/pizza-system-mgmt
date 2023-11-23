@@ -1,5 +1,6 @@
 package com.pwr.edu.backend.auth;
 
+import com.pwr.edu.backend.domain.security.AppUser;
 import com.pwr.edu.backend.domain.security.AppUserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,4 +15,5 @@ public class LoginResponse {
     private boolean isLoggedIn;
     private String token;
     private AppUserRole appUserRole;
+    private AppUser user;
 }
