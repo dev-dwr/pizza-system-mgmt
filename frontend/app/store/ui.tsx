@@ -1,14 +1,17 @@
 "use client";
+import { FamilyRestroom } from "@mui/icons-material";
 import { createContext, useCallback, useEffect, useState } from "react";
 
 interface UI {
   user: string;
+  employee: boolean;
   login: (user: string) => void;
   logout: () => void;
 }
 
 export const UIContext = createContext<UI>({
   user: "",
+  employee: false,
   login: (user: string) => {},
   logout: () => {},
 });
@@ -18,7 +21,8 @@ interface ProviderProps {
 }
 
 export default function UIContextProvider({ children }: ProviderProps) {
-  const [user, setUser] = useState<string>("");
+  const [user, setUser] = useState("");
+  const [employee, setEmployee] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("user");
@@ -32,7 +36,7 @@ export default function UIContextProvider({ children }: ProviderProps) {
 
   return (
     <UIContext.Provider
-      value={{ user, login, logout: () => setUser("") }}
+      value={{ user, employee, login, logout: () => setUser("") }}
     >
       {children}
     </UIContext.Provider>

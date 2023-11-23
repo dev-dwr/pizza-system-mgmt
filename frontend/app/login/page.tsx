@@ -18,8 +18,8 @@ import { enqueueSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
-  const { push } = useRouter();
-  const { login: saveUser } = useContext(UIContext);
+  const { push, replace } = useRouter();
+  const { user, login: saveUser } = useContext(UIContext);
   const [isLogin, setLogin] = useState(true);
   const {
     sendRequest: sendLogin,
@@ -36,13 +36,17 @@ export default function Login() {
   } = useHttp(register);
 
   useEffect(() => {
-    if (loginStatus === "success") {
+    if (user) replace("/account");
+  }, [user]);
+
+  useEffect(() => {
+    if (data) {
       saveUser(data);
       clearLogin();
       enqueueSnackbar("Successfully logged in.", { variant: "success" });
       push("/");
     }
-  }, [loginStatus, registerStatus, clearLogin, clearRegister]);
+  }, [data, clearLogin]);
 
   useEffect(() => {
     if (registerStatus === "success") {

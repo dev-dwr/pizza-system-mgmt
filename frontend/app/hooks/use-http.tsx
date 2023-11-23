@@ -1,8 +1,8 @@
 import { useReducer, useCallback } from "react";
 
-interface HttpState {
+interface HttpState<T = any> {
   status: string;
-  data?: any;
+  data?: T;
   error?: string;
 }
 
@@ -41,7 +41,7 @@ export default function useHttp<T>(
   startWithLoading = false
 ) {
   const [httpState, dispatch] = useReducer<
-    (state: HttpState, action: any) => HttpState
+    (state: HttpState<T>, action: any) => HttpState<T>
   >(httpReducer, {
     status: startWithLoading ? "loading" : "pending",
   });

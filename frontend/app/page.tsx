@@ -7,6 +7,7 @@ import { sendOrder } from "./utils/api";
 import { useContext, useEffect } from "react";
 import { UIContext } from "./store/ui";
 import { enqueueSnackbar } from "notistack";
+import { Pizza } from "./utils/types";
 
 export default function Home() {
   const { user: token } = useContext(UIContext);
@@ -25,6 +26,10 @@ export default function Home() {
       });
   }, [status]);
 
+  const handleAdd = (pizza: Pizza) => {
+    addPizza({ token, pizza });
+  };
+
   return (
     <Stack>
       {!token && (
@@ -32,7 +37,7 @@ export default function Home() {
           Welcome to Pizza. Log in to order OUR best pizzas!
         </Typography>
       )}
-      {token && <PizzaForm pizza={DEFAULT_PIZZA} onAdd={addPizza} />}
+      {token && <PizzaForm pizza={DEFAULT_PIZZA} onAdd={handleAdd} />}
     </Stack>
   );
 }

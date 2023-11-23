@@ -1,4 +1,4 @@
-import { Dough, Ingredient, Sauce, Size } from "./types";
+import { Dough, Ingredient, Pizza, Sauce, Size, Status } from "./types";
 
 export function getDough(value: string): Dough {
   switch (value) {
@@ -61,6 +61,18 @@ export function getSauce(value: string): Sauce {
   }
 }
 
+export function getStatus(value: string): Status {
+  switch (value) {
+    case "init":
+      return Status.INIT;
+    case "start":
+      return Status.START;
+    default:
+    case "finish":
+      return Status.FINISH;
+  }
+}
+
 export function getDoughs() {
   return Object.values(Dough).filter((key) => isNaN(Number(key)));
 }
@@ -75,4 +87,28 @@ export function getSizes() {
 
 export function getSauces() {
   return Object.values(Sauce).filter((key) => isNaN(Number(key)));
+}
+
+export function getStatuses() {
+  return Object.values(Status).filter((key) => isNaN(Number(key)));
+}
+
+export function convertToPizzaDao(pizza: Pizza) {
+  const size = (
+    pizza.size === Size.MEGA ? "MEGA_LARGE" : pizza.size
+  ).toUpperCase();
+
+  const sauce = (
+    pizza.sauce === Sauce.TOMATO_CHEESE ? "TOMATO_CHEESE" : pizza.sauce
+  ).toUpperCase();
+
+  return {
+    name: pizza.name,
+    dough: pizza.dough.toUpperCase(),
+    size,
+    sauce,
+    ingredientsList: pizza.ingredientsList.map((ingredient) =>
+      ingredient.toUpperCase()
+    ),
+  };
 }

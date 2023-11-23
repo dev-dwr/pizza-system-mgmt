@@ -1,7 +1,7 @@
 "use client";
 import { Typography, TextField, Button, Box } from "@mui/material";
 import useForm from "../hooks/use-form";
-import { User } from "../utils/types";
+import { Role, User } from "../utils/types";
 import { useState } from "react";
 
 function validateEmail(email: string): boolean {
@@ -75,7 +75,7 @@ export default function RegisterForm({ title, onSubmit, register }: Props) {
     if (register && (!nameValid || !lastNameValid || !confirmValid)) return;
     if (!emailValid || !passwordValid) return;
 
-    onSubmit({ firstname, lastname, email, password });
+    onSubmit({ firstname, lastname, email, password, userRole: Role.USER });
   };
 
   const isError = (touched: boolean, valid: boolean) =>

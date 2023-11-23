@@ -1,8 +1,14 @@
+export enum Role {
+  USER = "USER",
+  EMPLOYEE = "EMPLOYEE",
+}
+
 export type User = {
   firstname: string;
   lastname: string;
   email: string;
   password: string;
+  userRole: Role;
 };
 
 export enum Dough {
