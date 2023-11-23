@@ -46,7 +46,7 @@ public class LoginService {
 
         user.setLoggedIn(true);
         ConfirmationToken token = confirmationTokenRepository.findConfirmationTokenByAppUser(user);
-        return new LoginResponse(user.getLoggedIn(), token.getToken());
+        return new LoginResponse(user.getLoggedIn(), token.getToken(), token.getAppUser().getAppUserRole());
     }
 
     public void logoutUser(TokenRequest token) {
