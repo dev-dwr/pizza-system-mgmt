@@ -64,6 +64,8 @@ export default function Login() {
     }
   };
 
+  if (user) replace("/account");
+
   return (
     <Stack alignItems="center" gap={1}>
       <Card

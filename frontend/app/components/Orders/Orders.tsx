@@ -18,7 +18,7 @@ export default function Orders({ orders }: Props) {
   return (
     <Stack gap={1}>
       {orders.map((pizza) => (
-        <Order pizza={pizza} />
+        <Order key={pizza.id} pizza={pizza} />
       ))}
     </Stack>
   );

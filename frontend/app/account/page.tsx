@@ -22,6 +22,8 @@ export default function Account() {
     }
   }, [status]);
 
+  if (!user) replace("/login");
+
   return (
     <Stack alignItems="center">
       <Button onClick={() => sendRequest(user)} variant="contained">

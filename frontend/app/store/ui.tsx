@@ -1,6 +1,6 @@
 "use client";
-import { FamilyRestroom } from "@mui/icons-material";
 import { createContext, useCallback, useEffect, useState } from "react";
+import { Role } from "../utils/types";
 
 interface UI {
   user: string;
@@ -29,15 +29,19 @@ export default function UIContextProvider({ children }: ProviderProps) {
     if (token) setUser(token);
   }, []);
 
-  const login = useCallback((user: string) => {
+  const login = useCallback((user: string, role?: Role) => {
     localStorage.setItem("user", user);
     setUser(user);
+    setEmployee(role === Role.EMPLOYEE);
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem("user");
+    setUser("");
   }, []);
 
   return (
-    <UIContext.Provider
-      value={{ user, employee, login, logout: () => setUser("") }}
-    >
+    <UIContext.Provider value={{ user, employee, login, logout }}>
       {children}
     </UIContext.Provider>
   );

@@ -32,6 +32,8 @@ export async function logout(token: string) {
     }
   );
 
+  if (response.status === 403) return;
+
   if (!response.ok) {
     const data = await response.json();
     throw new Error(data.message);

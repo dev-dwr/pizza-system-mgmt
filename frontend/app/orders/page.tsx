@@ -21,6 +21,8 @@ export default function Orders() {
     if (status === "error") enqueueSnackbar(error, { variant: "error" });
   }, [status]);
 
+  if (!user) replace("/login");
+
   return (
     <Stack gap={1}>
       <Typography variant="h3">My Orders</Typography>
