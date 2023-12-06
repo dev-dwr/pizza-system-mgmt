@@ -3,6 +3,7 @@ package com.pwr.edu.backend.service;
 import com.pwr.edu.backend.domain.dto.PizzaDto;
 import com.pwr.edu.backend.domain.pizza.Pizza;
 import com.pwr.edu.backend.domain.security.AppUser;
+import com.pwr.edu.backend.domain.security.AppUserRole;
 import com.pwr.edu.backend.domain.security.ConfirmationToken;
 import com.pwr.edu.backend.email.EmailSender;
 import com.pwr.edu.backend.repository.PizzaRepository;
@@ -60,10 +61,9 @@ public class PizzaService {
 
     }
 
-    public void deletePizzaById(Long id, String jwt) {
+    public void deletePizzaById(Long id) {
         Pizza pizza = pizzaRepository.findById(id).orElseThrow(NotFoundException::new);
-        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
-        if (Objects.equals(pizza.getUser().getEmail(), confirmationToken.getAppUser().getEmail())) {
+        if (Objects.equals(pizza.getUser().getAppUserRole(), AppUserRole.EMPLOYEE)) {
             pizzaRepository.deleteById(id);
         } else {
             throw new IllegalStateException("You cannot delete not your own pizza");
