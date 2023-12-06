@@ -38,10 +38,9 @@ public class Pizza {
     @ElementCollection(targetClass = Ingredients.class)
     private List<Ingredients> ingredientsList;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "app_user")
     @ApiModelProperty(hidden = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AppUser user;
 
 
