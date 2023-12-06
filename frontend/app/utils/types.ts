@@ -39,7 +39,7 @@ export enum Ingredient {
   MUSHROOMS = "mushrooms",
   TOMATO = "tomato",
   PINEAPPLE = "pineapple",
-  CHILLI = "chili",
+  CHILLI = "chilli",
   MEAT = "meat",
 }
 

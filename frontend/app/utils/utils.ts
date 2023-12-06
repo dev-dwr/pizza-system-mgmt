@@ -113,6 +113,7 @@ export function PizzaToPizzaDto(pizza: Pizza) {
     ingredientsList: pizza.ingredientsList
       .map((ingredient) => ingredient.toUpperCase())
       .sort(),
+    currentStatus: pizza.currentStatus,
   };
 }
 

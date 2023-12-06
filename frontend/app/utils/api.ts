@@ -95,8 +95,8 @@ export async function removeOrder({
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER}/api/v1/pizza/delete/${id}`,
     {
+      method: "DELETE",
       headers: {
-        method: "DELETE",
         Authorization: `Bearer ${token}`,
       },
     }

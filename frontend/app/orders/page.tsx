@@ -15,13 +15,16 @@ export default function Orders() {
   const { sendRequest, status, error, data: orders } = useHttp(retrieveOrders);
 
   useEffect(() => {
-    if (user)
-      sendRequest(user.userRole === Role.EMPLOYEE ? undefined : user.token);
+    getOrders();
   }, [user]);
 
   useEffect(() => {
     if (status === "error") enqueueSnackbar(error, { variant: "error" });
   }, [status]);
+
+  const getOrders = () =>
+    user &&
+    sendRequest(user.userRole === Role.EMPLOYEE ? undefined : user.token);
 
   if (!user) replace("/login");
 
@@ -30,7 +33,7 @@ export default function Orders() {
       <Typography variant="h3">
         {user?.userRole === Role.USER ? "My" : ""} Orders
       </Typography>
-      <OrderList orders={orders} />
+      <OrderList orders={orders} refetch={getOrders} />
     </Stack>
   );
 }

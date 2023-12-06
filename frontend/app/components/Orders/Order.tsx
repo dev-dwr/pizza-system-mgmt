@@ -29,9 +29,10 @@ function getStatusDesc(status: Status) {
 
 interface Props {
   pizza: Pizza;
+  refetch: () => void;
 }
 
-export default function Order({ pizza }: Props) {
+export default function Order({ pizza, refetch }: Props) {
   const { user } = useContext(UIContext);
   const [status, setStatus] = useState(pizza.currentStatus || Status.INIT);
   const {
@@ -48,12 +49,14 @@ export default function Order({ pizza }: Props) {
   useEffect(() => {
     if (changeStatus === "error")
       enqueueSnackbar(changeError, { variant: "error" });
-  }, [status]);
+    else if (changeStatus === "success") refetch();
+  }, [changeStatus]);
 
   useEffect(() => {
     if (removeStatus === "error")
       enqueueSnackbar(removeError, { variant: "error" });
-  }, [status]);
+    else if (removeStatus === "success") refetch();
+  }, [removeStatus]);
 
   const handleRemove = () => remove({ token: user?.token, id: pizza.id });
   const handleChange = () => change({ id: pizza.id, status });
@@ -62,7 +65,7 @@ export default function Order({ pizza }: Props) {
     <Card>
       <CardContent component={Stack} gap={1}>
         {pizza.currentStatus && (
-          <Card sx={{bgcolor: "rgba(0, 255, 0, 0.1)"}}>
+          <Card sx={{ bgcolor: "rgba(0, 255, 0, 0.1)" }}>
             <CardContent>
               <Typography>
                 <b>Status of Your Order:</b>

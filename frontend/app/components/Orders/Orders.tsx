@@ -4,9 +4,10 @@ import Order from "./Order";
 
 interface Props {
   orders?: Pizza[];
+  refetch: () => void;
 }
 
-export default function Orders({ orders }: Props) {
+export default function Orders({ orders, refetch }: Props) {
   if (!orders)
     return (
       <Box width="100%">
@@ -18,7 +19,7 @@ export default function Orders({ orders }: Props) {
   return (
     <Stack gap={1}>
       {orders.map((pizza) => (
-        <Order key={pizza.id} pizza={pizza} />
+        <Order key={pizza.id} pizza={pizza} refetch={refetch} />
       ))}
     </Stack>
   );
