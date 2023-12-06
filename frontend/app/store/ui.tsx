@@ -1,18 +1,15 @@
 "use client";
 import { createContext, useCallback, useEffect, useState } from "react";
-import { Role } from "../utils/types";
+import { User } from "../utils/types";
 
 interface UI {
-  user: string;
-  employee: boolean;
-  login: (user: string) => void;
+  user?: User;
+  login: (user: User) => void;
   logout: () => void;
 }
 
 export const UIContext = createContext<UI>({
-  user: "",
-  employee: false,
-  login: (user: string) => {},
+  login: (user) => {},
   logout: () => {},
 });
 
@@ -21,27 +18,25 @@ interface ProviderProps {
 }
 
 export default function UIContextProvider({ children }: ProviderProps) {
-  const [user, setUser] = useState("");
-  const [employee, setEmployee] = useState(false);
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
-    const token = localStorage.getItem("user");
-    if (token) setUser(token);
+    const user = localStorage.getItem("user");
+    if (user) setUser(JSON.parse(user));
   }, []);
 
-  const login = useCallback((user: string, role?: Role) => {
-    localStorage.setItem("user", user);
+  const login = useCallback((user: User) => {
+    localStorage.setItem("user", JSON.stringify(user));
     setUser(user);
-    setEmployee(role === Role.EMPLOYEE);
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem("user");
-    setUser("");
+    setUser(undefined);
   }, []);
 
   return (
-    <UIContext.Provider value={{ user, employee, login, logout }}>
+    <UIContext.Provider value={{ user, login, logout }}>
       {children}
     </UIContext.Provider>
   );

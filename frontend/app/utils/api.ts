@@ -17,7 +17,11 @@ export async function login(user: User) {
   const data = await response.json();
   if (!response.ok) throw new Error(data.message);
 
-  return data.token as string;
+  return {
+    ...data.user,
+    userRole: data.user.appUserRole,
+    token: data.token,
+  } as User;
 }
 
 export async function logout(token: string) {
@@ -114,13 +118,13 @@ export async function changeOrderStatus({
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER}/api/v1/pizza/${id}`,
     {
+      method: "PUT",
       headers: {
-        method: "PUT",
         "Content-Type": "application/json",
-        body: JSON.stringify(
-          PizzaToPizzaDto({ ...DEFAULT_PIZZA, currentStatus: status })
-        ),
       },
+      body: JSON.stringify(
+        PizzaToPizzaDto({ ...DEFAULT_PIZZA, currentStatus: status })
+      ),
     }
   );
 

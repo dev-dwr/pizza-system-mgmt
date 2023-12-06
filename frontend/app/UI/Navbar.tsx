@@ -28,7 +28,7 @@ const StyledSpeedDialAction = styled(SpeedDialAction)({
   },
 });
 
-function ActionsSpeedDial({ user }: { user?: string }) {
+function ActionsSpeedDial({ user }: { user: boolean }) {
   const { push } = useRouter();
 
   return (
@@ -67,7 +67,7 @@ export default function Navbar() {
         >
           {user && <Link href="/orders">Orders</Link>}
           <Link href={user ? "/account" : "/login"}>
-            {user ? "My Account" : "Login"}
+            {user ? `Hello, ${user.firstname}` : "Login"}
           </Link>
         </Stack>
         <Stack
@@ -79,7 +79,7 @@ export default function Navbar() {
           justifyContent="center"
           alignItems="center"
         >
-          <ActionsSpeedDial user={user} />
+          <ActionsSpeedDial user={!!user} />
         </Stack>
       </Toolbar>
     </AppBar>

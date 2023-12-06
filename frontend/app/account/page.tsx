@@ -1,7 +1,7 @@
 "use client";
 import { useContext, useEffect } from "react";
 import useHttp from "../hooks/use-http";
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { UIContext } from "../store/ui";
 import { enqueueSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
@@ -25,8 +25,14 @@ export default function Account() {
   if (!user) replace("/login");
 
   return (
-    <Stack alignItems="center">
-      <Button onClick={() => sendRequest(user)} variant="contained">
+    <Stack alignItems="left" gap={4}>
+      <Typography variant="h5">
+        <b>
+          Name: {user?.firstname} {user?.lastname}
+        </b>
+      </Typography>
+      <Typography variant="h6">Email: {user?.email}</Typography>
+      <Button onClick={() => sendRequest(user?.token)} variant="contained">
         Logout
       </Button>
     </Stack>

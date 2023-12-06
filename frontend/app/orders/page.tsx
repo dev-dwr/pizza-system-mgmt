@@ -7,14 +7,16 @@ import useHttp from "../hooks/use-http";
 import { retrieveOrders } from "../utils/api";
 import { useRouter } from "next/navigation";
 import OrderList from "../components/Orders/Orders";
+import { Role } from "../utils/types";
 
 export default function Orders() {
-  const { user, employee } = useContext(UIContext);
+  const { user } = useContext(UIContext);
   const { replace } = useRouter();
   const { sendRequest, status, error, data: orders } = useHttp(retrieveOrders);
 
   useEffect(() => {
-    if (user) sendRequest(employee ? undefined : user);
+    if (user)
+      sendRequest(user.userRole === Role.EMPLOYEE ? undefined : user.token);
   }, [user]);
 
   useEffect(() => {
@@ -25,7 +27,9 @@ export default function Orders() {
 
   return (
     <Stack gap={1}>
-      <Typography variant="h3">My Orders</Typography>
+      <Typography variant="h3">
+        {user?.userRole === Role.USER ? "My" : ""} Orders
+      </Typography>
       <OrderList orders={orders} />
     </Stack>
   );

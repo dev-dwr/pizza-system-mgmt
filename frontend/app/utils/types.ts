@@ -9,6 +9,7 @@ export type User = {
   email: string;
   password: string;
   userRole: Role;
+  token: string;
 };
 
 export enum Dough {
@@ -43,9 +44,9 @@ export enum Ingredient {
 }
 
 export enum Status {
-  INIT = "init",
-  START = "start",
-  FINISH = "finish",
+  INIT = "INIT",
+  START = "START",
+  FINISH = "FINISH",
 }
 
 export type Pizza = {

@@ -127,7 +127,7 @@ export function PizzaDtoToPizza(pizza: any): Pizza {
       .map((ingredient) => getIngredient(ingredient))
       .sort(),
     price: pizza.price,
-    currentStatus: pizza.currentStatus,
+    currentStatus: getStatus(pizza.currentStatus),
   };
 }
 

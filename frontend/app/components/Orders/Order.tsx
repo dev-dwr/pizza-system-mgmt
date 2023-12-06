@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Pizza, Status } from "../../utils/types";
+import { Pizza, Role, Status } from "../../utils/types";
 import Select from "../../UI/Select";
 import { useContext, useEffect, useState } from "react";
 import { capitalize, getStatus, getStatuses } from "../../utils/utils";
@@ -32,7 +32,7 @@ interface Props {
 }
 
 export default function Order({ pizza }: Props) {
-  const { user, employee } = useContext(UIContext);
+  const { user } = useContext(UIContext);
   const [status, setStatus] = useState(pizza.currentStatus || Status.INIT);
   const {
     sendRequest: change,
@@ -55,18 +55,25 @@ export default function Order({ pizza }: Props) {
       enqueueSnackbar(removeError, { variant: "error" });
   }, [status]);
 
-  const handleRemove = () => remove({ token: user, id: pizza.id });
+  const handleRemove = () => remove({ token: user?.token, id: pizza.id });
   const handleChange = () => change({ id: pizza.id, status });
 
   return (
     <Card>
-      <CardContent>
+      <CardContent component={Stack} gap={1}>
+        {pizza.currentStatus && (
+          <Card sx={{bgcolor: "rgba(0, 255, 0, 0.1)"}}>
+            <CardContent>
+              <Typography>
+                <b>Status of Your Order:</b>
+              </Typography>
+              <Typography>{getStatusDesc(pizza.currentStatus)}</Typography>
+            </CardContent>
+          </Card>
+        )}
         <Typography variant="h6">
           {capitalize(pizza.size)} {pizza.dough} pizza with {pizza.sauce} sauce
         </Typography>
-        {pizza.currentStatus && (
-          <Typography>{getStatusDesc(pizza.currentStatus)}</Typography>
-        )}
         {!!pizza.ingredientsList.length && (
           <Stack>
             <Typography>Ingredients</Typography>
@@ -86,8 +93,8 @@ export default function Order({ pizza }: Props) {
           <Typography>
             Price: <b>{pizza.price}zł</b>
           </Typography>
-          {employee && (
-            <Stack direction="row">
+          {user?.userRole === Role.EMPLOYEE && (
+            <Stack direction="row" gap={1} alignItems="center">
               <Select
                 sx={{ minWidth: 120, mt: 1 }}
                 label="Status"

@@ -10,7 +10,7 @@ public enum Ingredients {
     MUSHROOMS(false),
     TOMATO(false),
     PINEAPPLE(false),
-    CHILI(false),
+    CHILLI(false),
     ;
 
     private final boolean meat;
