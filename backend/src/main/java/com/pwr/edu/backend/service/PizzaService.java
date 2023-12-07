@@ -61,9 +61,12 @@ public class PizzaService {
 
     }
 
-    public void deletePizzaById(Long id) {
+    public void deletePizzaById(Long id, String jwt) {
         Pizza pizza = pizzaRepository.findById(id).orElseThrow(NotFoundException::new);
-        if (Objects.equals(pizza.getUser().getAppUserRole(), AppUserRole.EMPLOYEE)) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
+
+        if (Objects.equals(confirmationToken.getAppUser().getAppUserRole(), AppUserRole.EMPLOYEE) ||
+                Objects.equals(pizza.getUser().getEmail(), confirmationToken.getAppUser().getEmail())) {
             pizzaRepository.deleteById(id);
         } else {
             throw new IllegalStateException("You cannot delete not your own pizza");
