@@ -45,9 +45,8 @@ public class PizzaController {
     }
 
     @DeleteMapping("/pizza/delete/{id}")
-    public void deletePizzaById(@PathVariable Long id, @RequestHeader("Authorization") String bearerToken) {
-        String jwt = getJwt(bearerToken);
-        pizzaService.deletePizzaById(id, jwt);
+    public void deletePizzaById(@PathVariable Long id) {
+        pizzaService.deletePizzaById(id);
     }
 
     @GetMapping("/me")
