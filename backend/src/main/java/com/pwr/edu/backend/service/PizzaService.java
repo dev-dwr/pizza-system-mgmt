@@ -65,7 +65,7 @@ public class PizzaService {
         Pizza pizza = pizzaRepository.findById(id).orElseThrow(NotFoundException::new);
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
 
-        if (Objects.equals(pizza.getUser().getAppUserRole(), AppUserRole.EMPLOYEE) ||
+        if (Objects.equals(confirmationToken.getAppUser().getAppUserRole(), AppUserRole.EMPLOYEE) ||
                 Objects.equals(pizza.getUser().getEmail(), confirmationToken.getAppUser().getEmail())) {
             pizzaRepository.deleteById(id);
         } else {
