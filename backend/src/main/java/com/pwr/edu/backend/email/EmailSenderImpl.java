@@ -28,7 +28,7 @@ public class EmailSenderImpl implements EmailSender {
 
             helper.setText(email, true);
             helper.setTo(to);
-            helper.setSubject("Confirm your email");
+            helper.setSubject("You have new message!");
             helper.setFrom("dawid.jscript@gmail.com");
 
             mailSender.send(mimeMessage);
