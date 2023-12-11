@@ -1,14 +1,14 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useLayoutEffect } from "react";
 import useHttp from "../hooks/use-http";
 import { Button, Stack, Typography } from "@mui/material";
 import { UIContext } from "../store/ui";
 import { enqueueSnackbar } from "notistack";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { logout } from "../utils/api";
 
 export default function Account() {
-  const { push, replace } = useRouter();
+  const { push } = useRouter();
   const { user, logout: deleteUser } = useContext(UIContext);
   const { sendRequest, status, error } = useHttp(logout);
 
@@ -22,7 +22,9 @@ export default function Account() {
     }
   }, [status]);
 
-  if (!user) replace("/login");
+  useLayoutEffect(() => {
+    if (!user) redirect("/login");
+  }, []);
 
   return (
     <Stack alignItems="left" gap={4}>

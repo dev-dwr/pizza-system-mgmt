@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import useHttp from "../hooks/use-http";
 import { login, register } from "../utils/api";
 import {
@@ -15,10 +15,10 @@ import RegisterForm from "../components/RegisterForm";
 import { User } from "../utils/types";
 import { UIContext } from "../store/ui";
 import { enqueueSnackbar } from "notistack";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Login() {
-  const { push, replace } = useRouter();
+  const { push } = useRouter();
   const { user, login: saveUser } = useContext(UIContext);
   const [isLogin, setLogin] = useState(true);
   const {
@@ -64,7 +64,9 @@ export default function Login() {
     }
   };
 
-  if (user) replace("/account");
+  useLayoutEffect(() => {
+    if (user) redirect("/account");
+  }, []);
 
   return (
     <Stack alignItems="center" gap={1}>
