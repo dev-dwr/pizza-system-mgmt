@@ -41,7 +41,7 @@ public class PizzaController {
     @PutMapping("/pizza/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void changePizzaStatus(@PathVariable Long id, @RequestBody Pizza pizza) {
-        pizzaService.changePizzaStatus(id, pizza);
+//        pizzaService.changePizzaStatus(id, pizza);
     }
 
     @DeleteMapping("/pizza/delete/{id}")
@@ -56,6 +56,27 @@ public class PizzaController {
         String jwt = getJwt(bearerToken);
         return pizzaService.getCurrentUser(jwt);
     }
+
+    @PostMapping("/current-price")
+    @ResponseStatus(HttpStatus.OK)
+    public Integer getCurrentPizzaPrice(@RequestBody List<Pizza> pizza) {
+        return pizzaService.getCurrentPizzaPrice(pizza);
+    }
+
+//    @PatchMapping("/update-order")
+//    @ResponseStatus(HttpStatus.OK)
+//    public void updateOrder(@RequestBody Order order, @RequestHeader("Authorization") String bearerToken) {
+//        String jwt = getJwt(bearerToken);
+//        pizzaService.updateOrder(order, jwt);
+//    }
+
+
+//    @GetMapping("/get-order")
+//    @ResponseStatus(HttpStatus.OK)
+//    public Order getOrder(@RequestHeader("Authorization") String bearerToken) {
+//        String jwt = getJwt(bearerToken);
+//        return pizzaService.getUserOrder(jwt);
+//    }
 
     private String getJwt(String bearerToken) {
         String jwt = null;

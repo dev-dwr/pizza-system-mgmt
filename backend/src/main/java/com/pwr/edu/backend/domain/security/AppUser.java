@@ -26,6 +26,9 @@ public class AppUser implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pizza> pizza = new ArrayList<>();
 
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Order order;
+
     private Boolean locked = false;
     private Boolean enabled = false;
     private Boolean loggedIn = false;

@@ -2,6 +2,7 @@ package com.pwr.edu.backend.service;
 
 import com.pwr.edu.backend.domain.dto.PizzaDto;
 import com.pwr.edu.backend.domain.pizza.Pizza;
+import com.pwr.edu.backend.domain.pizza.Status;
 import com.pwr.edu.backend.domain.security.AppUser;
 import com.pwr.edu.backend.domain.security.AppUserRole;
 import com.pwr.edu.backend.domain.security.ConfirmationToken;
@@ -16,8 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.pwr.edu.backend.exceptions.NotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,20 +30,19 @@ public class PizzaService {
     private final PizzaRepository pizzaRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
+//    private final OrderRepository orderRepository;
+
     private final EmailBuilder emailBuilder;
     private final EmailSender emailSender;
 
     @Transactional
     public Pizza createPizza(Pizza pizza, String jwt) {
-        PriceCalculator priceCalculator = new PriceCalculator(new SwitchCalculationStrategy());
-
-        int price = priceCalculator.calculatePrice(pizza);
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
         pizza.setUser(confirmationToken.getAppUser());
         pizzaRepository.save(pizza);
-        pizzaRepository.updatePizzaPrice(price, pizza.getId());
+//        Pizza pizzaById = pizzaRepository.findById(pizza.getId()).get();
+//        orderRepository.save(new Order(List.of(pizzaById), confirmationToken.getAppUser()));
         return pizza;
-
     }
 
     public List<PizzaDto> findAllPizza() {
@@ -84,25 +87,42 @@ public class PizzaService {
                 .name(pizza.getName())
                 .price(pizza.getPrice())
                 .id(pizza.getId())
-                .currentStatus(pizza.getCurrentStatus().toString())
                 .build();
     }
 
-    public void changePizzaStatus(Long id, Pizza pizza) {
-        Pizza wantedPizza = pizzaRepository.findById(id)
-                .orElseThrow(NotFoundException::new);
-        wantedPizza.setCurrentStatus(pizza.getCurrentStatus());
-        pizzaRepository.save(wantedPizza);
-
-        emailSender.send(
-                wantedPizza.getUser().getEmail(),
-                emailBuilder.changedStatusEmail(pizza.getCurrentStatus())
-        );
-
-    }
+//    public void changePizzaStatus(Long id, Pizza pizza) {
+//        Pizza wantedPizza = pizzaRepository.findById(id)
+//                .orElseThrow(NotFoundException::new);
+//        wantedPizza.setCurrentStatus(pizza.getCurrentStatus());
+//        pizzaRepository.save(wantedPizza);
+//
+//        emailSender.send(
+//                wantedPizza.getUser().getEmail(),
+//                emailBuilder.changedStatusEmail(pizza.getCurrentStatus())
+//        );
+//
+//    }
 
     public AppUser getCurrentUser(String jwt) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
         return confirmationToken.getAppUser();
     }
+
+    public int getCurrentPizzaPrice(List<Pizza> pizza) {
+        PriceCalculator priceCalculator = new PriceCalculator(new SwitchCalculationStrategy());
+        AtomicInteger sum = new AtomicInteger();
+        pizza.forEach(el -> sum.addAndGet(priceCalculator.calculatePrice(el)));
+        return sum.get();
+    }
+
+//    public void updateOrder(Order order, String jwt) {
+//        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
+//        Order orderByUserEmail = pizzaRepository.findOrderByUserEmail(confirmationToken.getAppUser().getEmail());
+//        orderRepository.updateOrderStatus(order.getCurrentStatus(), order.getDelivery(), Collections.emptyList(), orderByUserEmail.getId());
+//    }
+//
+//    public Order getUserOrder(String jwt) {
+//        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
+//        return pizzaRepository.findOrderByUserEmail(confirmationToken.getAppUser().getEmail());
+//    }
 }

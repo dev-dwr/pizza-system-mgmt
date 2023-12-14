@@ -32,9 +32,6 @@ public class Pizza {
     private Size size;
 
     @Enumerated(EnumType.STRING)
-    private Status currentStatus = Status.INIT;
-
-    @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Ingredients.class)
     private List<Ingredients> ingredientsList;
 
@@ -42,6 +39,11 @@ public class Pizza {
     @JoinColumn(name = "app_user")
     @ApiModelProperty(hidden = true)
     private AppUser user;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "order")
+//    @ApiModelProperty(hidden = true)
+//    private Order order;
 
 
     private int price;
