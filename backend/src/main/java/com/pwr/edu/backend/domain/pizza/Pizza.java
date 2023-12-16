@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Pizza {
     @Id
+    @ApiModelProperty(hidden = true)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pizza_generator")
     @SequenceGenerator(name = "pizza_generator", sequenceName = "pizza_seq", allocationSize = 1)
     private Long id;
@@ -31,8 +32,6 @@ public class Pizza {
     @Enumerated(EnumType.STRING)
     private Size size;
 
-    @Enumerated(EnumType.STRING)
-    private Status currentStatus = Status.INIT;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = Ingredients.class)
@@ -43,6 +42,10 @@ public class Pizza {
     @ApiModelProperty(hidden = true)
     private AppUser user;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "bucket_id")
+    @ApiModelProperty(hidden = true)
+    private Bucket bucket;
 
     private int price;
 
@@ -54,7 +57,7 @@ public class Pizza {
         this.ingredientsList = ingredientsList;
     }
 
-    public static PizzaBuilder builder(){
+    public static PizzaBuilder builder() {
         return new PizzaBuilder();
     }
 

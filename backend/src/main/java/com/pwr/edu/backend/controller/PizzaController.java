@@ -1,6 +1,7 @@
 package com.pwr.edu.backend.controller;
 
 import com.pwr.edu.backend.domain.dto.PizzaDto;
+import com.pwr.edu.backend.domain.pizza.Bucket;
 import com.pwr.edu.backend.domain.pizza.Pizza;
 import com.pwr.edu.backend.domain.security.AppUser;
 import com.pwr.edu.backend.service.PizzaService;
@@ -38,10 +39,10 @@ public class PizzaController {
         return pizzaService.findUsersAllPizzas(getJwt(bearerToken));
     }
 
-    @PutMapping("/pizza/{id}")
+    @PutMapping("/bucket/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void changePizzaStatus(@PathVariable Long id, @RequestBody Pizza pizza) {
-        pizzaService.changePizzaStatus(id, pizza);
+    public void changeBucketStatus(@PathVariable Long id, @RequestBody Bucket bucket) {
+        pizzaService.changeBucketStatus(id, bucket);
     }
 
     @DeleteMapping("/pizza/delete/{id}")
@@ -55,6 +56,27 @@ public class PizzaController {
     public AppUser getCurrentLoggedInUser(@RequestHeader("Authorization") String bearerToken) {
         String jwt = getJwt(bearerToken);
         return pizzaService.getCurrentUser(jwt);
+    }
+
+    @PostMapping("/update-order")
+    @ResponseStatus(HttpStatus.OK)
+    public Bucket updateOrder(@RequestBody Bucket order, @RequestHeader("Authorization") String bearerToken) {
+        String jwt = getJwt(bearerToken);
+        return pizzaService.updateOrder(order, jwt);
+    }
+
+
+    @GetMapping("/get-order")
+    @ResponseStatus(HttpStatus.OK)
+    public Bucket getOrder(@RequestHeader("Authorization") String bearerToken) {
+        String jwt = getJwt(bearerToken);
+        return pizzaService.getUserOrder(jwt);
+    }
+
+    @PostMapping("/current-price")
+    @ResponseStatus(HttpStatus.OK)
+    public Integer getCurrentPizzaPrice(@RequestBody List<Pizza> pizza) {
+        return pizzaService.getCurrentPizzaPrice(pizza);
     }
 
     private String getJwt(String bearerToken) {

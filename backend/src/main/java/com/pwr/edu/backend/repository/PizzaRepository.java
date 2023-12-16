@@ -16,7 +16,11 @@ public interface PizzaRepository extends JpaRepository<Pizza, Long> {
     @Query("SELECT p FROM Pizza p WHERE p.user.email = :email")
     List<Pizza> findPizzasByUserEmail(@Param("email") String email);
 
+    @Query("SELECT p FROM Pizza p WHERE p.price = 0")
+    List<Pizza> findPizzaWithZeroPrice();
+
     List<Pizza> findAll();
+
 
     @Transactional
     @Modifying
