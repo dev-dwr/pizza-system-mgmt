@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import useHttp from "../hooks/use-http";
 import { login, register } from "../utils/api";
 import {
@@ -15,11 +15,11 @@ import RegisterForm from "../components/RegisterForm";
 import { User } from "../utils/types";
 import { UIContext } from "../store/ui";
 import { enqueueSnackbar } from "notistack";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Login() {
   const { push } = useRouter();
-  const { login: saveUser } = useContext(UIContext);
+  const { user, login: saveUser } = useContext(UIContext);
   const [isLogin, setLogin] = useState(true);
   const {
     sendRequest: sendLogin,
@@ -36,13 +36,13 @@ export default function Login() {
   } = useHttp(register);
 
   useEffect(() => {
-    if (loginStatus === "success") {
+    if (data) {
       saveUser(data);
       clearLogin();
       enqueueSnackbar("Successfully logged in.", { variant: "success" });
       push("/");
     }
-  }, [loginStatus, registerStatus, clearLogin, clearRegister]);
+  }, [data, clearLogin]);
 
   useEffect(() => {
     if (registerStatus === "success") {
@@ -63,6 +63,10 @@ export default function Login() {
       sendRegister(user);
     }
   };
+
+  useLayoutEffect(() => {
+    if (user) redirect("/account");
+  }, []);
 
   return (
     <Stack alignItems="center" gap={1}>

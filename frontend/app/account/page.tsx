@@ -1,20 +1,10 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useLayoutEffect } from "react";
 import useHttp from "../hooks/use-http";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  LinearProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
-import RegisterForm from "../components/RegisterForm";
-import { User } from "../utils/types";
+import { Button, Stack, Typography } from "@mui/material";
 import { UIContext } from "../store/ui";
 import { enqueueSnackbar } from "notistack";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { logout } from "../utils/api";
 
 export default function Account() {
@@ -32,9 +22,19 @@ export default function Account() {
     }
   }, [status]);
 
+  useLayoutEffect(() => {
+    if (!user) redirect("/login");
+  }, []);
+
   return (
-    <Stack alignItems="center">
-      <Button onClick={() => sendRequest(user)} variant="contained">
+    <Stack alignItems="left" gap={4}>
+      <Typography variant="h5">
+        <b>
+          Name: {user?.firstname} {user?.lastname}
+        </b>
+      </Typography>
+      <Typography variant="h6">Email: {user?.email}</Typography>
+      <Button onClick={() => sendRequest(user?.token)} variant="contained">
         Logout
       </Button>
     </Stack>

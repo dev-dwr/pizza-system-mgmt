@@ -1,15 +1,15 @@
 "use client";
 import { createContext, useCallback, useEffect, useState } from "react";
+import { User } from "../utils/types";
 
 interface UI {
-  user: string;
-  login: (user: string) => void;
+  user?: User;
+  login: (user: User) => void;
   logout: () => void;
 }
 
 export const UIContext = createContext<UI>({
-  user: "",
-  login: (user: string) => {},
+  login: (user) => {},
   logout: () => {},
 });
 
@@ -18,22 +18,25 @@ interface ProviderProps {
 }
 
 export default function UIContextProvider({ children }: ProviderProps) {
-  const [user, setUser] = useState<string>("");
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
-    const token = localStorage.getItem("user");
-    if (token) setUser(token);
+    const user = localStorage.getItem("user");
+    if (user) setUser(JSON.parse(user));
   }, []);
 
-  const login = useCallback((user: string) => {
-    localStorage.setItem("user", user);
+  const login = useCallback((user: User) => {
+    localStorage.setItem("user", JSON.stringify(user));
     setUser(user);
   }, []);
 
+  const logout = useCallback(() => {
+    localStorage.removeItem("user");
+    setUser(undefined);
+  }, []);
+
   return (
-    <UIContext.Provider
-      value={{ user, login, logout: () => setUser("") }}
-    >
+    <UIContext.Provider value={{ user, login, logout }}>
       {children}
     </UIContext.Provider>
   );
