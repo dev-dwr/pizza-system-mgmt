@@ -26,7 +26,7 @@ export function getIngredient(value: string): Ingredient {
       return Ingredient.SALAMI;
     case "chilli":
     case "chili":
-      return Ingredient.CHILLI;
+      return Ingredient.CHILI;
     case "meat":
       return Ingredient.MEAT;
     case "pineapple":
