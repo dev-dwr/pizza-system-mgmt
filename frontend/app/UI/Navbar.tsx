@@ -28,7 +28,7 @@ const StyledSpeedDialAction = styled(SpeedDialAction)({
   },
 });
 
-function ActionsSpeedDial() {
+function ActionsSpeedDial({ user }: { user: boolean }) {
   const { push } = useRouter();
 
   return (
@@ -41,9 +41,9 @@ function ActionsSpeedDial() {
         FabProps={{ sx: { width: 40, minHeight: 0, height: 40 } }}
       >
         <StyledSpeedDialAction
-          tooltipTitle="Account"
+          tooltipTitle={user ? "Account" : "Login"}
           tooltipOpen
-          onClick={() => push("/account")}
+          onClick={() => push(user ? "/account" : "/login")}
         />
       </SpeedDial>
     </>
@@ -62,11 +62,12 @@ export default function Navbar() {
         <Stack
           direction="row"
           justifyContent="space-between"
-          display={{ xs: "none", lg: "flex" }}
-          gap={{ lg: 5, xl: 10 }}
+          display={{ xs: "none", sm: "flex" }}
+          gap={{ xs: 5, xl: 10 }}
         >
+          {user && <Link href="/orders">Orders</Link>}
           <Link href={user ? "/account" : "/login"}>
-            {user ? "My Account" : "Login"}
+            {user ? `Hello, ${user.firstname}` : "Login"}
           </Link>
         </Stack>
         <Stack
@@ -74,11 +75,11 @@ export default function Navbar() {
           top={7}
           right={0}
           zIndex={10}
-          display={{ xs: "flex", lg: "none" }}
+          display={{ xs: "flex", sm: "none" }}
           justifyContent="center"
           alignItems="center"
         >
-          <ActionsSpeedDial />
+          <ActionsSpeedDial user={!!user} />
         </Stack>
       </Toolbar>
     </AppBar>
