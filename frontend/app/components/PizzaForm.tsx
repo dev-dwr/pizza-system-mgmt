@@ -7,7 +7,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { Ingredient, Pizza } from "../utils/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   getDough,
   getDoughs,
@@ -18,6 +18,9 @@ import {
   getSizes,
 } from "../utils/utils";
 import Select from "../UI/Select";
+import useHttp from "../hooks/use-http";
+import { getPizzaPrice } from "../utils/api";
+import { enqueueSnackbar } from "notistack";
 
 interface Props {
   pizza: Pizza;
@@ -26,6 +29,15 @@ interface Props {
 
 export default function PizzaForm({ pizza: startPizza, onAdd }: Props) {
   const [pizza, setPizza] = useState<Pizza>(startPizza);
+  const { sendRequest, status, error, data } = useHttp(getPizzaPrice);
+
+  useEffect(() => {
+    if (status === "error") enqueueSnackbar(error, { variant: "error" });
+  }, [status]);
+
+  useEffect(() => {
+    sendRequest(pizza);
+  }, [pizza]);
 
   const isIngredient = (ingredient: Ingredient) => {
     return (
@@ -102,6 +114,7 @@ export default function PizzaForm({ pizza: startPizza, onAdd }: Props) {
           />
         ))}
       </Stack>
+      <Typography><b>Price: {data}zł</b></Typography>
       <Button
         variant="contained"
         fullWidth

@@ -1,6 +1,11 @@
-import { DEFAULT_PIZZA } from "./constants";
-import { Pizza, Status, User } from "./types";
-import { PizzaDtoToPizza, PizzaToPizzaDto } from "./utils";
+import { DEFAULT_ORDER, DEFAULT_PIZZA } from "./constants";
+import { Delivery, Order, Pizza, Status, User } from "./types";
+import {
+  OrderDtoToOrder,
+  OrderToOrderDto,
+  PizzaDtoToPizza,
+  PizzaToPizzaDto,
+} from "./utils";
 
 export async function login(user: User) {
   const response = await fetch(
@@ -62,7 +67,7 @@ export async function register(user: User) {
   }
 }
 
-export async function sendOrder({
+export async function addPizza({
   token,
   pizza,
 }: {
@@ -85,7 +90,7 @@ export async function sendOrder({
   if (!response.ok) throw new Error(data.message);
 }
 
-export async function removeOrder({
+export async function removePizza({
   token,
   id,
 }: {
@@ -116,14 +121,14 @@ export async function changeOrderStatus({
   status: Status;
 }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER}/api/v1/pizza/${id}`,
+    `${process.env.NEXT_PUBLIC_SERVER}/api/v1/bucket/${id}`,
     {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(
-        PizzaToPizzaDto({ ...DEFAULT_PIZZA, currentStatus: status })
+        OrderToOrderDto({ ...DEFAULT_ORDER, currentStatus: status })
       ),
     }
   );
@@ -134,28 +139,96 @@ export async function changeOrderStatus({
   }
 }
 
-export async function getUserData(token: string) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER}/api/v1/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function changeOrderDelivery({
+  token,
+  delivery,
+}: {
+  token: string;
+  delivery: Delivery;
+}) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER}/api/v1/update-order`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(OrderToOrderDto({ ...DEFAULT_ORDER, delivery })),
+    }
+  );
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.message);
+  }
+}
+
+export async function getPizzaPrice(pizza: Pizza) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER}/api/v1/current-price`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([PizzaToPizzaDto(pizza)]),
+    }
+  );
 
   const data = await response.json();
   if (!response.ok) throw new Error(data.message);
 
-  return data as User;
+  return data as number;
 }
 
 export async function retrieveOrders(token?: string) {
-  let orders;
-  if (!token) orders = await retrieveAllOrders();
-  else orders = await retrieveUserOrders(token);
-
-  return orders.map((order) => PizzaDtoToPizza(order));
+  if (token) return retrieveUserOrders(token);
+  return retrieveAllOrders();
 }
 
 async function retrieveUserOrders(token: string) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER}/api/v1/get-order`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message);
+
+  const pizzas = await retrieveUserPizzas(token);
+
+  return [
+    { ...OrderDtoToOrder(data), pizzas: pizzas.map((p) => PizzaDtoToPizza(p)) },
+  ] as Order[];
+}
+
+async function retrieveAllOrders() {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER}/api/v1/order/all`
+  );
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message);
+
+  const pizzas: any[] = await retrieveAllPizzas();
+
+  return data.map(
+    (order: any) =>
+      ({
+        ...OrderDtoToOrder(order),
+        pizzas: pizzas
+          .filter((p) => p.appUser.email === order.email)
+          .map((p) => PizzaDtoToPizza(p)),
+      } as Order)
+  ) as Order[];
+}
+
+async function retrieveUserPizzas(token: string) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER}/api/v1/pizza/own`,
     {
@@ -170,7 +243,7 @@ async function retrieveUserOrders(token: string) {
 
   return data as Pizza[];
 }
-async function retrieveAllOrders() {
+async function retrieveAllPizzas() {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER}/api/v1/pizza/all`
   );
@@ -178,5 +251,5 @@ async function retrieveAllOrders() {
   const data = await response.json();
   if (!response.ok) throw new Error(data.message);
 
-  return data as Pizza[];
+  return data;
 }

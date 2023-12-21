@@ -1,4 +1,13 @@
-import { Dough, Ingredient, Pizza, Sauce, Size, Status } from "./types";
+import {
+  Delivery,
+  Dough,
+  Ingredient,
+  Order,
+  Pizza,
+  Sauce,
+  Size,
+  Status,
+} from "./types";
 
 export function getDough(value: string): Dough {
   switch (value.toLowerCase()) {
@@ -26,9 +35,7 @@ export function getIngredient(value: string): Ingredient {
       return Ingredient.SALAMI;
     case "chilli":
     case "chili":
-      return Ingredient.CHILI;
-    case "meat":
-      return Ingredient.MEAT;
+      return Ingredient.CHILLI;
     case "pineapple":
       return Ingredient.PINEAPPLE;
   }
@@ -76,6 +83,18 @@ export function getStatus(value: string): Status {
   }
 }
 
+export function getDelivery(value: string): Delivery {
+  switch (value.toLowerCase()) {
+    case "on pizza place":
+    case "on_pizza_place":
+    default:
+      return Delivery.ON_PIZZA_PLACE;
+    case "on_your_home":
+    case "to your home":
+      return Delivery.ON_YOUR_HOME;
+  }
+}
+
 export function getDoughs() {
   return Object.values(Dough).filter((key) => isNaN(Number(key)));
 }
@@ -96,6 +115,10 @@ export function getStatuses() {
   return Object.values(Status).filter((key) => isNaN(Number(key)));
 }
 
+export function getDeliveries() {
+  return Object.values(Delivery).filter((key) => isNaN(Number(key)));
+}
+
 export function PizzaToPizzaDto(pizza: Pizza) {
   const size = (
     pizza.size === Size.MEGA_LARGE ? "MEGA_LARGE" : pizza.size
@@ -113,7 +136,6 @@ export function PizzaToPizzaDto(pizza: Pizza) {
     ingredientsList: pizza.ingredientsList
       .map((ingredient) => ingredient.toUpperCase())
       .sort(),
-    currentStatus: pizza.currentStatus,
   };
 }
 
@@ -128,10 +150,35 @@ export function PizzaDtoToPizza(pizza: any): Pizza {
       .map((ingredient) => getIngredient(ingredient))
       .sort(),
     price: pizza.price,
-    currentStatus: getStatus(pizza.currentStatus),
+  };
+}
+
+export function OrderToOrderDto(order: Order) {
+  return {
+    currentStatus: order.currentStatus,
+    delivery: getEnumKey(Delivery, order.delivery),
+    price: order.price,
+    email: order.email,
+  };
+}
+
+export function OrderDtoToOrder(order: any): Order {
+  return {
+    id: order.id,
+    currentStatus: getStatus(order.currentStatus),
+    delivery: getDelivery(order.delivery),
+    price: order.price,
+    email: order.email,
+    pizzas: [],
   };
 }
 
 export function capitalize(word: string) {
   return word[0].toUpperCase() + word.substring(1);
+}
+
+export function getEnumKey(e: any, value: string) {
+  return Object.entries(e).find(
+    ([k, v]) => typeof k === "string" && v === value
+  )?.[0];
 }

@@ -6,10 +6,10 @@ import { UIContext } from "../store/ui";
 import useHttp from "../hooks/use-http";
 import { retrieveOrders } from "../utils/api";
 import { redirect } from "next/navigation";
-import OrderList from "../components/Orders/Orders";
 import { Role } from "../utils/types";
+import Orders from "../components/Orders/Orders";
 
-export default function Orders() {
+export default function Cart() {
   const { user } = useContext(UIContext);
   const { sendRequest, status, error, data: orders } = useHttp(retrieveOrders);
 
@@ -21,19 +21,17 @@ export default function Orders() {
     if (status === "error") enqueueSnackbar(error, { variant: "error" });
   }, [status]);
 
-  const getOrders = () =>
-    user &&
-    sendRequest(user.userRole === Role.EMPLOYEE ? undefined : user.token);
+  const getOrders = () => user && sendRequest(user.token);
 
   useLayoutEffect(() => {
     if (!user) redirect("/login");
-    else if (user.userRole === Role.USER) redirect("/cart");
+    else if (user.userRole === Role.EMPLOYEE) redirect("/orders");
   }, []);
 
   return (
     <Stack gap={1}>
-      <Typography variant="h3">Orders</Typography>
-      <OrderList orders={orders} refetch={getOrders} />
+      <Typography variant="h3">My Order</Typography>
+      <Orders orders={orders} refetch={getOrders} />
     </Stack>
   );
 }

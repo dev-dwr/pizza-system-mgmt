@@ -3,27 +3,67 @@ import { Stack, Typography } from "@mui/material";
 import PizzaForm from "./components/PizzaForm";
 import { DEFAULT_PIZZA } from "./utils/constants";
 import useHttp from "./hooks/use-http";
-import { sendOrder } from "./utils/api";
+import { addPizza } from "./utils/api";
 import { useContext, useEffect } from "react";
 import { UIContext } from "./store/ui";
 import { enqueueSnackbar } from "notistack";
-import { Pizza, Role } from "./utils/types";
+import { Dough, Ingredient, Pizza, Role, Sauce, Size } from "./utils/types";
 import Link from "next/link";
+import DefaultPizza from "./components/DefaultPizza";
+import salami from "./assets/salami.jpg";
+import hawaii from "./assets/hawaii.jpg";
+import funghi from "./assets/funghi.jpg";
+
+const DEFAULT_PIZZAS = [
+  {
+    photo: salami,
+    pizza: {
+      name: "Pizza Salami",
+      dough: Dough.ITALIAN,
+      size: Size.MEGA_LARGE,
+      sauce: Sauce.TOMATO_CHEESE,
+      price: 40,
+      ingredientsList: [Ingredient.SALAMI],
+    },
+  },
+  {
+    photo: hawaii,
+    pizza: {
+      name: "Pizza Hawaii",
+      dough: Dough.ITALIAN,
+      size: Size.MEGA_LARGE,
+      sauce: Sauce.TOMATO,
+      price: 40,
+      ingredientsList: [Ingredient.HAM, Ingredient.PINEAPPLE],
+    },
+  },
+  {
+    photo: funghi,
+    pizza: {
+      name: "Pizza Funghi",
+      dough: Dough.ITALIAN,
+      size: Size.MEGA_LARGE,
+      sauce: Sauce.TOMATO,
+      price: 40,
+      ingredientsList: [Ingredient.HAM, Ingredient.MUSHROOMS],
+    },
+  },
+];
 
 export default function Home() {
   const { user } = useContext(UIContext);
-  const { sendRequest: addPizza, status, error } = useHttp(sendOrder);
+  const { sendRequest, status, error } = useHttp(addPizza);
 
   useEffect(() => {
     if (status === "error") enqueueSnackbar(error, { variant: "error" });
     else if (status === "success")
-      enqueueSnackbar("Pizza ordered :D", {
+      enqueueSnackbar("Pizza added to cart", {
         variant: "success",
       });
   }, [status]);
 
   const handleAdd = (pizza: Pizza) => {
-    addPizza({ token: user?.token, pizza });
+    sendRequest({ token: user?.token, pizza });
   };
 
   return (
@@ -39,7 +79,17 @@ export default function Home() {
         </Typography>
       )}
       {user?.userRole === Role.USER && (
-        <PizzaForm pizza={DEFAULT_PIZZA} onAdd={handleAdd} />
+        <Stack gap={4}>
+          {DEFAULT_PIZZAS.map(({ photo, pizza }) => (
+            <DefaultPizza
+              pizza={pizza}
+              photo={photo}
+              onAdd={() => handleAdd(pizza)}
+            />
+          ))}
+
+          <PizzaForm pizza={DEFAULT_PIZZA} onAdd={handleAdd} />
+        </Stack>
       )}
     </Stack>
   );

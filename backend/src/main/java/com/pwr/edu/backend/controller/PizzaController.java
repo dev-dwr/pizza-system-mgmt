@@ -29,6 +29,11 @@ public class PizzaController {
         return pizzaService.findAllPizza();
     }
 
+    @GetMapping("/order/all")
+    public List<Bucket> getAllOrders() {
+        return pizzaService.findAllBucket();
+    }
+
     @GetMapping("/pizza/{id}")
     public Pizza getPizzaById(@PathVariable Long id) {
         return pizzaService.findPizzaById(id);

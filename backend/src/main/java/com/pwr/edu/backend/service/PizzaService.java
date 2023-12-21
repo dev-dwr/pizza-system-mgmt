@@ -1,5 +1,4 @@
 package com.pwr.edu.backend.service;
-
 import com.pwr.edu.backend.domain.dto.PizzaDto;
 import com.pwr.edu.backend.domain.pizza.Bucket;
 import com.pwr.edu.backend.domain.pizza.Delivery;
@@ -18,7 +17,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.pwr.edu.backend.exceptions.NotFoundException;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -68,6 +66,10 @@ public class PizzaService {
         return pizzaRepository.findAll().stream()
                 .map(this::pizzaToPizzaDto)
                 .collect(Collectors.toList());
+    }
+
+    public List<Bucket> findAllBucket() {
+        return bucketRepository.findAll();
     }
 
     public Pizza findPizzaById(Long id) {
@@ -162,5 +164,4 @@ public class PizzaService {
         pizza.forEach(el -> sum.addAndGet(priceCalculator.calculatePrice(el)));
         return sum.get();
     }
-
 }

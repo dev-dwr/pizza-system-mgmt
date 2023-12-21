@@ -1,9 +1,9 @@
-import { Pizza } from "@/app/utils/types";
+import { Order as IOrder } from "@/app/utils/types";
 import { Box, LinearProgress, Stack, Typography } from "@mui/material";
-import Order from "./Order";
+import Order from "../Orders/Order";
 
 interface Props {
-  orders?: Pizza[];
+  orders?: IOrder[];
   refetch: () => void;
 }
 
@@ -14,12 +14,14 @@ export default function Orders({ orders, refetch }: Props) {
         <LinearProgress />
       </Box>
     );
-  if (!orders.length) return <Typography>No orders yet.</Typography>;
+
+  const filteredOrders = orders.filter((o) => o.pizzas.length > 0);
+  if (!filteredOrders.length) return <Typography>No orders yet.</Typography>;
 
   return (
     <Stack gap={1}>
-      {orders.map((pizza) => (
-        <Order key={pizza.id} pizza={pizza} refetch={refetch} />
+      {filteredOrders.map((order) => (
+        <Order key={order.id} order={order} refetch={refetch} />
       ))}
     </Stack>
   );
