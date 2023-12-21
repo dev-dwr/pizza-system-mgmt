@@ -132,16 +132,20 @@ public class PizzaService {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
         Bucket bucket = bucketRepository.findBucketByEmail(confirmationToken.getAppUser().getEmail()).orElse(null);
         assert bucket != null;
-        Bucket newBuck;
+        Bucket newBuck = null;
         if (order.getDelivery() == Delivery.ON_YOUR_HOME) {
             int price = getCurrentPizzaPrice(bucket.getPizza()) + 15;
             bucket.setPrice(price);
             bucket.setDelivery(order.getDelivery());
             newBuck = bucketRepository.save(bucket);
-        } else {
+        }
+        if (order.getDelivery() == Delivery.ON_PIZZA_PLACE) {
+            int price = getCurrentPizzaPrice(bucket.getPizza()) - 15;
             bucket.setDelivery(order.getDelivery());
+            bucket.setPrice(price);
             newBuck = bucketRepository.save(bucket);
         }
+        
         return newBuck;
     }
 
