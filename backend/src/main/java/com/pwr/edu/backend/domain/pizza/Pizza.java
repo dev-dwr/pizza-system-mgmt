@@ -23,7 +23,7 @@ public class Pizza {
     @SequenceGenerator(name = "pizza_generator", sequenceName = "pizza_seq", allocationSize = 1)
     private Long id;
 
-    private String name;
+    private String name; //Pizza identifier based on this we will increment quantity
 
     @Enumerated(EnumType.STRING)
     private Dough dough;
@@ -31,6 +31,8 @@ public class Pizza {
     private Sauce sauce;
     @Enumerated(EnumType.STRING)
     private Size size;
+
+    private int quantity = 0;
 
 
     @Enumerated(EnumType.STRING)

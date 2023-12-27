@@ -8,7 +8,7 @@ import com.pwr.edu.backend.domain.security.AppUser;
 import com.pwr.edu.backend.domain.security.AppUserRole;
 import com.pwr.edu.backend.domain.security.ConfirmationToken;
 import com.pwr.edu.backend.email.EmailSender;
-import com.pwr.edu.backend.repository.OrderRepository;
+import com.pwr.edu.backend.repository.BucketRepository;
 import com.pwr.edu.backend.repository.PizzaRepository;
 import com.pwr.edu.backend.repository.security.ConfirmationTokenRepository;
 import com.pwr.edu.backend.service.calculation.PriceCalculator;
@@ -21,26 +21,27 @@ import com.pwr.edu.backend.exceptions.NotFoundException;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-//TODO update order and (change bucket status)
-//TODO usuwanie pizzy z bucketa
 
 @Service
 @AllArgsConstructor
 public class PizzaService {
     private final PizzaRepository pizzaRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
-    private final OrderRepository bucketRepository;
+    private final BucketRepository bucketRepository;
 
     private final EmailBuilder emailBuilder;
     private final EmailSender emailSender;
 
     @Transactional
     public Pizza createPizza(Pizza pizza, String jwt) {
-        PriceCalculator priceCalculator = new PriceCalculator(new SwitchCalculationStrategy());
-        int price = priceCalculator.calculatePrice(pizza);
+        int currentPrice = getCurrentPizzaPrice(List.of(pizza));
+
+        List<Pizza> existingPizza = pizzaRepository.findPizzaByName(pizza.getName(), pizza.getDough(),
+                pizza.getSize(), pizza.getSauce());
 
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
         pizza.setUser(confirmationToken.getAppUser());
@@ -49,19 +50,46 @@ public class PizzaService {
         if (bucketByEmail == null) {
             bucketByEmail = new Bucket(confirmationToken.getAppUser().getEmail());
         }
+
         bucketByEmail.addPizza(pizza);
-        bucketByEmail.setPrice(price);
         pizza.setBucket(bucketByEmail);
 
-        bucketRepository.save(bucketByEmail);
-        pizzaRepository.save(pizza);
-        pizzaRepository.updatePizzaPrice(price, pizza.getId());
 
-        List<Pizza> pizzaWithZeroPrice = pizzaRepository.findPizzaWithZeroPrice();
-        pizzaWithZeroPrice.forEach(el -> pizzaRepository.deleteById(el.getId()));
+        Pizza lastPizza = null;
+        if (pizza.getQuantity() == 0 && existingPizza.isEmpty()) {
+            pizza.setQuantity(1);
+
+        } else {
+            lastPizza = existingPizza.get(existingPizza.size() - 1);
+        }
+
+
+        if (lastPizza != null
+                && lastPizza.getSauce() == pizza.getSauce()
+                && lastPizza.getDough() == pizza.getDough()
+                && Objects.equals(lastPizza.getName(), pizza.getName())
+        ) {
+            pizza.setQuantity(lastPizza.getQuantity() + 1);
+            pizzaRepository.updatePizzaQuantity(lastPizza.getQuantity() + 1, lastPizza.getId());
+            pizzaRepository.updatePizzaPrice(currentPrice, lastPizza.getId());
+            bucketByEmail.setPrice(currentPrice * lastPizza.getQuantity());
+        } else if (lastPizza != null){
+            bucketByEmail.setPrice(currentPrice * lastPizza.getQuantity());
+            bucketRepository.save(bucketByEmail);
+            pizzaRepository.save(pizza);
+            pizzaRepository.updatePizzaPrice(currentPrice, pizza.getId());
+            List<Pizza> pizzaWithZeroPrice = pizzaRepository.findPizzaWithZeroPrice();
+            pizzaWithZeroPrice.forEach(el -> pizzaRepository.deleteById(el.getId()));
+        }else{
+            bucketRepository.save(bucketByEmail);
+            pizzaRepository.save(pizza);
+            pizzaRepository.updatePizzaPrice(currentPrice, pizza.getId());
+            List<Pizza> pizzaWithZeroPrice = pizzaRepository.findPizzaWithZeroPrice();
+            pizzaWithZeroPrice.forEach(el -> pizzaRepository.deleteById(el.getId()));
+        }
+
 
         return pizza;
-
     }
 
     public List<PizzaDto> findAllPizza() {
@@ -132,21 +160,21 @@ public class PizzaService {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
         Bucket bucket = bucketRepository.findBucketByEmail(confirmationToken.getAppUser().getEmail()).orElse(null);
         assert bucket != null;
-        Bucket newBuck = null;
+        if (order.getDelivery() == Delivery.ON_PIZZA_PLACE) {
+            int price = getCurrentPizzaPrice(bucket.getPizza());
+            bucket.setDelivery(order.getDelivery());
+            bucket.setPrice(price);
+            bucketRepository.updatePrice(price, bucket.getId());
+        }
+
         if (order.getDelivery() == Delivery.ON_YOUR_HOME) {
             int price = getCurrentPizzaPrice(bucket.getPizza()) + 15;
-            bucket.setPrice(price);
-            bucket.setDelivery(order.getDelivery());
-            newBuck = bucketRepository.save(bucket);
-        }
-        if (order.getDelivery() == Delivery.ON_PIZZA_PLACE) {
-            int price = getCurrentPizzaPrice(bucket.getPizza()) - 15;
             bucket.setDelivery(order.getDelivery());
             bucket.setPrice(price);
-            newBuck = bucketRepository.save(bucket);
+            bucketRepository.updatePrice(price, bucket.getId());
         }
-        
-        return newBuck;
+
+        return bucket;
     }
 
     @Transactional
@@ -167,4 +195,51 @@ public class PizzaService {
         return sum.get();
     }
 
+    public Pizza increasePizzaAmount(Pizza pizza) {
+        List<Pizza> existingPizza = pizzaRepository.findPizzaByName(pizza.getName(), pizza.getDough(),
+                pizza.getSize(), pizza.getSauce());
+
+        Pizza lastPizza = null;
+        if (pizza.getQuantity() == 0 && existingPizza.isEmpty()) {
+            pizza.setQuantity(1);
+
+        } else {
+            lastPizza = existingPizza.get(existingPizza.size() - 1);
+        }
+
+        if (lastPizza != null
+                && lastPizza.getSauce() == pizza.getSauce()
+                && lastPizza.getDough() == pizza.getDough()
+                && Objects.equals(lastPizza.getName(), pizza.getName())
+        ) {
+            lastPizza.setQuantity(lastPizza.getQuantity() + 1);
+            pizzaRepository.updatePizzaQuantity(lastPizza.getQuantity() + 1, lastPizza.getId());
+            pizzaRepository.updatePizzaPrice(lastPizza.getPrice(), lastPizza.getId());
+        }
+        return lastPizza;
+    }
+
+    public Pizza decrease(Pizza pizza) {
+        List<Pizza> existingPizza = pizzaRepository.findPizzaByName(pizza.getName(), pizza.getDough(),
+                pizza.getSize(), pizza.getSauce());
+
+        Pizza lastPizza = null;
+        if (pizza.getQuantity() == 0 && existingPizza.isEmpty()) {
+            pizza.setQuantity(1);
+
+        } else {
+            lastPizza = existingPizza.get(existingPizza.size() - 1);
+        }
+
+        if (lastPizza != null
+                && lastPizza.getSauce() == pizza.getSauce()
+                && lastPizza.getDough() == pizza.getDough()
+                && Objects.equals(lastPizza.getName(), pizza.getName())
+        ) {
+            lastPizza.setQuantity(lastPizza.getQuantity() - 1);
+            pizzaRepository.updatePizzaQuantity(lastPizza.getQuantity() - 1, lastPizza.getId());
+            pizzaRepository.updatePizzaPrice(lastPizza.getPrice(), lastPizza.getId());
+        }
+        return lastPizza;
+    }
 }
