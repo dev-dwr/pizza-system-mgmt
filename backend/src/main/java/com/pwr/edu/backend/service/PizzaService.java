@@ -206,86 +206,63 @@ public class PizzaService {
         return sum.get();
     }
 
-    public Pizza increasePizzaAmount(Pizza pizza) {
-        List<Pizza> existingPizza = pizzaRepository.findPizzaByName(pizza.getName(), pizza.getDough(),
-                pizza.getSize(), pizza.getSauce());
+    public Pizza increasePizzaAmount(Pizza pizza, String jwt) {
+        Pizza existingPizza = pizzaRepository.findById(pizza.getId()).orElse(null);
 
-        Pizza lastPizza = null;
-        if (pizza.getQuantity() == 0 && existingPizza.isEmpty()) {
-            pizza.setQuantity(1);
+        int currentPrice = getCurrentPizzaPrice(List.of(pizza));
 
-        } else {
-            lastPizza = existingPizza.get(existingPizza.size() - 1);
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
+        Bucket bucketByEmail = bucketRepository.findBucketByEmail(confirmationToken.getAppUser().getEmail()).orElse(null);
+        pizza.setUser(confirmationToken.getAppUser());
+
+        if(pizza != null){
+            List<Pizza> pizzaByBucket = pizzaRepository.findPizzaByBucket(bucketByEmail.getId());
+            AtomicInteger priceInTheBucket = new AtomicInteger();
+            pizzaByBucket.forEach(p -> priceInTheBucket.addAndGet(p.getPrice()));
+            int allPrice = priceInTheBucket.get() + currentPrice;
+
+            pizza.setQuantity(existingPizza.getQuantity() + 1);
+            int pizzaPrice = currentPrice * pizza.getQuantity();
+
+            pizza.setPrice(pizzaPrice);
+            pizza.setBucket(bucketByEmail);
+
+            bucketByEmail.addPizza(pizza);
+            bucketByEmail.setPrice(allPrice);
+
+            pizzaRepository.save(pizza);
+            bucketRepository.save(bucketByEmail);
         }
-
-        if (lastPizza != null
-                && lastPizza.getSauce() == pizza.getSauce()
-                && lastPizza.getDough() == pizza.getDough()
-                && Objects.equals(lastPizza.getName(), pizza.getName())
-        ) {
-            lastPizza.setQuantity(lastPizza.getQuantity() + 1);
-            pizzaRepository.updatePizzaQuantity(lastPizza.getQuantity() + 1, lastPizza.getId());
-            pizzaRepository.updatePizzaPrice(lastPizza.getPrice(), lastPizza.getId());
-        }
-        return lastPizza;
+        return pizza;
     }
 
-    public Pizza decrease(Pizza pizza) {
-        List<Pizza> existingPizza = pizzaRepository.findPizzaByName(pizza.getName(), pizza.getDough(),
-                pizza.getSize(), pizza.getSauce());
+    public Pizza decrease(Pizza pizza, String jwt) {
+        Pizza existingPizza = pizzaRepository.findById(pizza.getId()).orElse(null);
 
-        Pizza lastPizza = null;
-        if (pizza.getQuantity() == 0 && existingPizza.isEmpty()) {
-            pizza.setQuantity(1);
+        int currentPrice = getCurrentPizzaPrice(List.of(pizza));
 
-        } else {
-            lastPizza = existingPizza.get(existingPizza.size() - 1);
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
+        Bucket bucketByEmail = bucketRepository.findBucketByEmail(confirmationToken.getAppUser().getEmail()).orElse(null);
+        pizza.setUser(confirmationToken.getAppUser());
+
+        if(pizza != null){
+            List<Pizza> pizzaByBucket = pizzaRepository.findPizzaByBucket(bucketByEmail.getId());
+            AtomicInteger priceInTheBucket = new AtomicInteger();
+            pizzaByBucket.forEach(p -> priceInTheBucket.addAndGet(p.getPrice()));
+            int allPrice = priceInTheBucket.get() - currentPrice;
+
+            pizza.setQuantity(existingPizza.getQuantity() - 1);
+            int pizzaPrice = currentPrice * pizza.getQuantity();
+
+            pizza.setPrice(pizzaPrice);
+            pizza.setBucket(bucketByEmail);
+
+            bucketByEmail.addPizza(pizza);
+            bucketByEmail.setPrice(allPrice);
+
+            pizzaRepository.save(pizza);
+            bucketRepository.save(bucketByEmail);
         }
-
-        if (lastPizza != null
-                && lastPizza.getSauce() == pizza.getSauce()
-                && lastPizza.getDough() == pizza.getDough()
-                && Objects.equals(lastPizza.getName(), pizza.getName())
-        ) {
-            lastPizza.setQuantity(lastPizza.getQuantity() - 1);
-            pizzaRepository.updatePizzaQuantity(lastPizza.getQuantity() - 1, lastPizza.getId());
-            pizzaRepository.updatePizzaPrice(lastPizza.getPrice(), lastPizza.getId());
-        }
-        return lastPizza;
+        return pizza;
     }
 }
-
-
-/*
-
-
-        if (lastPizza != null
-                && lastPizza.getSauce() == pizza.getSauce()
-                && lastPizza.getDough() == pizza.getDough()
-                && Objects.equals(lastPizza.getName(), pizza.getName())
-        ) {
-            pizza.setQuantity(existingPizza.get(0).getQuantity() + 1);
-            pizzaRepository.updatePizzaQuantity(existingPizza.get(0).getQuantity() + 1, existingPizza.get(0).getId());
-            pizzaRepository.updatePizzaPrice(currentPrice, existingPizza.get(0).getId());
-            bucketByEmail.setPrice(currentPrice *  existingPizza.get(0).getQuantity());
-
-            pizza.setPrice(currentPrice *  existingPizza.get(0).getQuantity());
-            pizzaRepository.save(pizza);
-            List<Pizza> pizzaWithZeroPrice = pizzaRepository.findPizzaWithZeroPrice();
-            pizzaWithZeroPrice.forEach(el -> pizzaRepository.deleteById(el.getId()));
-        } else if (lastPizza != null) {
-            bucketByEmail.setPrice(currentPrice * lastPizza.getQuantity());
-            bucketRepository.save(bucketByEmail);
-            pizzaRepository.save(pizza);
-            pizzaRepository.updatePizzaPrice(currentPrice, pizza.getId());
-            List<Pizza> pizzaWithZeroPrice = pizzaRepository.findPizzaWithZeroPrice();
-            pizzaWithZeroPrice.forEach(el -> pizzaRepository.deleteById(el.getId()));
-        } else {
-            bucketRepository.save(bucketByEmail);
-            pizza.setPrice(currentPrice);
-            pizzaRepository.save(pizza);
-            pizzaRepository.updatePizzaPrice(currentPrice, pizza.getId());
-            List<Pizza> pizzaWithZeroPrice = pizzaRepository.findPizzaWithZeroPrice();
-            pizzaWithZeroPrice.forEach(el -> pizzaRepository.deleteById(el.getId()));
-        }
- */

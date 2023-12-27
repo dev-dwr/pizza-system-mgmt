@@ -87,14 +87,16 @@ public class PizzaController {
 
     @PostMapping("/increase-pizza-amount")
     @ResponseStatus(HttpStatus.OK)
-    public Pizza increasePizzaQuantity(@RequestBody Pizza pizza) {
-        return pizzaService.increasePizzaAmount(pizza);
+    public Pizza increasePizzaQuantity(@RequestBody Pizza pizza, @RequestHeader("Authorization") String bearerToken) {
+        String jwt = getJwt(bearerToken);
+        return pizzaService.increasePizzaAmount(pizza, jwt);
     }
 
     @PostMapping("/decrease-pizza-amount")
     @ResponseStatus(HttpStatus.OK)
-    public Pizza decreasePizzaQuantity(@RequestBody Pizza pizza) {
-        return pizzaService.decrease(pizza);
+    public Pizza decreasePizzaQuantity(@RequestBody Pizza pizza, @RequestHeader("Authorization") String bearerToken) {
+        String jwt = getJwt(bearerToken);
+        return pizzaService.decrease(pizza, jwt);
     }
 
     private String getJwt(String bearerToken) {
