@@ -1,20 +1,18 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Pizza, Role, Status } from "../../utils/types";
+import { Button, Card, CardContent, Stack, Typography } from "@mui/material";
+import { Delivery, Order, Role, Status } from "../../utils/types";
 import Select from "../../UI/Select";
 import { useContext, useEffect, useState } from "react";
-import { capitalize, getStatus, getStatuses } from "../../utils/utils";
+import {
+  getDeliveries,
+  getDelivery,
+  getStatus,
+  getStatuses,
+} from "../../utils/utils";
 import useHttp from "../../hooks/use-http";
-import { changeOrderStatus, removeOrder } from "../../utils/api";
+import { changeOrderDelivery, changeOrderStatus } from "../../utils/api";
 import { UIContext } from "../../store/ui";
 import { enqueueSnackbar } from "notistack";
+import Pizza from "./Pizza";
 
 function getStatusDesc(status: Status) {
   switch (status) {
@@ -28,23 +26,27 @@ function getStatusDesc(status: Status) {
 }
 
 interface Props {
-  pizza: Pizza;
+  order: Order;
   refetch: () => void;
 }
 
-export default function Order({ pizza, refetch }: Props) {
+export default function Order({ order, refetch }: Props) {
   const { user } = useContext(UIContext);
-  const [status, setStatus] = useState(pizza.currentStatus || Status.INIT);
+  const [status, setStatus] = useState(order.currentStatus || Status.INIT);
+  const [delivery, setDelivery] = useState(
+    order.delivery || Delivery.ON_PIZZA_PLACE
+  );
   const {
-    sendRequest: change,
+    sendRequest: sendChangeStatus,
     status: changeStatus,
     error: changeError,
   } = useHttp(changeOrderStatus);
+
   const {
-    sendRequest: remove,
-    status: removeStatus,
-    error: removeError,
-  } = useHttp(removeOrder);
+    sendRequest: sendChangeDelivery,
+    status: deliveryStatus,
+    error: deliveryError,
+  } = useHttp(changeOrderDelivery);
 
   useEffect(() => {
     if (changeStatus === "error")
@@ -53,49 +55,55 @@ export default function Order({ pizza, refetch }: Props) {
   }, [changeStatus]);
 
   useEffect(() => {
-    if (removeStatus === "error")
-      enqueueSnackbar(removeError, { variant: "error" });
-    else if (removeStatus === "success") refetch();
-  }, [removeStatus]);
+    if (deliveryStatus === "error")
+      enqueueSnackbar(deliveryError, { variant: "error" });
+    else if (deliveryStatus === "success") refetch();
+  }, [deliveryStatus]);
 
-  const handleRemove = () => remove({ token: user?.token, id: pizza.id });
-  const handleChange = () => change({ id: pizza.id, status });
+  const handleStatusChange = () => sendChangeStatus({ id: order?.id, status });
+  const handleDeliveryChange = () =>
+    sendChangeDelivery({ token: user?.token, delivery });
+
+  if (!order.pizzas.length) return null;
 
   return (
     <Card>
       <CardContent component={Stack} gap={1}>
-        {pizza.currentStatus && (
+        {order.currentStatus && (
           <Card sx={{ bgcolor: "rgba(0, 255, 0, 0.1)" }}>
             <CardContent>
               <Typography>
                 <b>Status of Your Order:</b>
               </Typography>
-              <Typography>{getStatusDesc(pizza.currentStatus)}</Typography>
+              <Typography>{getStatusDesc(order.currentStatus)}</Typography>
             </CardContent>
           </Card>
         )}
-        <Typography variant="h6">
-          {capitalize(pizza.size)} {pizza.dough} pizza with {pizza.sauce} sauce
-        </Typography>
-        {!!pizza.ingredientsList.length && (
-          <Stack>
-            <Typography>Ingredients</Typography>
-            {pizza.ingredientsList.map((ingredient) => (
-              <Typography key={ingredient} variant="body2" ml={1}>
-                • {ingredient}
-              </Typography>
-            ))}
-          </Stack>
-        )}
+        {order.pizzas.map((p) => (
+          <Pizza pizza={p} refetch={refetch} />
+        ))}
         <Stack
-          width="100%"
           direction="row"
           justifyContent="space-between"
           alignItems="center"
         >
           <Typography>
-            Price: <b>{pizza.price}zł</b>
+            Price: <b>{order.price}zł</b>
           </Typography>
+          {user?.userRole === Role.USER && (
+            <Stack direction="row" gap={1} alignItems="center">
+              <Select
+                sx={{ minWidth: 160, mt: 1 }}
+                label="Delivery"
+                value={delivery}
+                onValueChange={(value) => setDelivery(getDelivery(value))}
+                items={getDeliveries()}
+              />
+              <Button variant="contained" onClick={handleDeliveryChange}>
+                Change
+              </Button>
+            </Stack>
+          )}
           {user?.userRole === Role.EMPLOYEE && (
             <Stack direction="row" gap={1} alignItems="center">
               <Select
@@ -105,14 +113,11 @@ export default function Order({ pizza, refetch }: Props) {
                 onValueChange={(value) => setStatus(getStatus(value))}
                 items={getStatuses()}
               />
-              <Button variant="contained" onClick={handleChange}>
+              <Button variant="contained" onClick={handleStatusChange}>
                 Change
               </Button>
             </Stack>
           )}
-          <IconButton onClick={handleRemove}>
-            <DeleteIcon />
-          </IconButton>
         </Stack>
       </CardContent>
     </Card>

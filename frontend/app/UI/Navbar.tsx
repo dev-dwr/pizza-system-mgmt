@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
 import { UIContext } from "../store/ui";
+import { Role } from "../utils/types";
 
 declare module "@mui/material/AppBar" {
   interface AppBarPropsColorOverrides {
@@ -57,7 +58,9 @@ export default function Navbar() {
     <AppBar position="fixed" color="mgrey">
       <Toolbar sx={{ justifyContent: "space-between" }}>
         <Link href="/">
-          <Typography letterSpacing="1rem">Pizza</Typography>
+          <Typography letterSpacing="1rem">
+            Pizza {user?.userRole === Role.EMPLOYEE && "    Employee Panel"}
+          </Typography>
         </Link>
         <Stack
           direction="row"
@@ -65,7 +68,10 @@ export default function Navbar() {
           display={{ xs: "none", sm: "flex" }}
           gap={{ xs: 5, xl: 10 }}
         >
-          {user && <Link href="/orders">Orders</Link>}
+          {user?.userRole === Role.USER && <Link href="/cart">Cart</Link>}
+          {user?.userRole === Role.EMPLOYEE && (
+            <Link href="/orders">Orders</Link>
+          )}
           <Link href={user ? "/account" : "/login"}>
             {user ? `Hello, ${user.firstname}` : "Login"}
           </Link>

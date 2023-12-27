@@ -39,14 +39,18 @@ export enum Ingredient {
   MUSHROOMS = "mushrooms",
   TOMATO = "tomato",
   PINEAPPLE = "pineapple",
-  CHILI = "chili",
-  MEAT = "meat",
+  CHILLI = "chilli",
 }
 
 export enum Status {
   INIT = "INIT",
   START = "START",
   FINISH = "FINISH",
+}
+
+export enum Delivery {
+  ON_PIZZA_PLACE = "On Pizza Place",
+  ON_YOUR_HOME = "To Your Home",
 }
 
 export type Pizza = {
@@ -57,5 +61,13 @@ export type Pizza = {
   sauce: Sauce;
   ingredientsList: Ingredient[];
   price?: number;
-  currentStatus?: Status;
+};
+
+export type Order = {
+  id?: number;
+  currentStatus: Status;
+  delivery: Delivery;
+  price: number;
+  email: string;
+  pizzas: Pizza[];
 };

@@ -1,4 +1,14 @@
-import { Dough, Pizza, Role, Sauce, Size, User } from "./types";
+import {
+  Delivery,
+  Dough,
+  Order,
+  Pizza,
+  Role,
+  Sauce,
+  Size,
+  Status,
+  User,
+} from "./types";
 
 export const PLUM = "#552647";
 export const GREEN = "#254137";
@@ -20,4 +30,11 @@ export const DEFAULT_USER: User = {
   password: "",
   userRole: Role.USER,
   token: "",
+};
+export const DEFAULT_ORDER: Order = {
+  currentStatus: Status.START,
+  delivery: Delivery.ON_PIZZA_PLACE,
+  price: 0,
+  email: "",
+  pizzas: [],
 };
