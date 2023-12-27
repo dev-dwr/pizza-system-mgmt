@@ -61,6 +61,7 @@ export type Pizza = {
   sauce: Sauce;
   ingredientsList: Ingredient[];
   price?: number;
+  quantity?: number;
 };
 
 export type Order = {

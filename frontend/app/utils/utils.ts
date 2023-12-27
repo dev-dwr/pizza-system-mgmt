@@ -150,6 +150,7 @@ export function PizzaDtoToPizza(pizza: any): Pizza {
       .map((ingredient) => getIngredient(ingredient))
       .sort(),
     price: pizza.price,
+    quantity: pizza.quantity,
   };
 }
 

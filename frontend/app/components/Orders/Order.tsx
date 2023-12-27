@@ -32,10 +32,6 @@ interface Props {
 
 export default function Order({ order, refetch }: Props) {
   const { user } = useContext(UIContext);
-  const [status, setStatus] = useState(order.currentStatus || Status.INIT);
-  const [delivery, setDelivery] = useState(
-    order.delivery || Delivery.ON_PIZZA_PLACE
-  );
   const {
     sendRequest: sendChangeStatus,
     status: changeStatus,
@@ -60,9 +56,11 @@ export default function Order({ order, refetch }: Props) {
     else if (deliveryStatus === "success") refetch();
   }, [deliveryStatus]);
 
-  const handleStatusChange = () => sendChangeStatus({ id: order?.id, status });
-  const handleDeliveryChange = () =>
-    sendChangeDelivery({ token: user?.token, delivery });
+  const handleStatusChange = (value: string) => {
+    sendChangeStatus({ id: order?.id, status: getStatus(value) });
+  };
+  const handleDeliveryChange = (value: string) =>
+    sendChangeDelivery({ token: user?.token, delivery: getDelivery(value) });
 
   if (!order.pizzas.length) return null;
 
@@ -95,13 +93,10 @@ export default function Order({ order, refetch }: Props) {
               <Select
                 sx={{ minWidth: 160, mt: 1 }}
                 label="Delivery"
-                value={delivery}
-                onValueChange={(value) => setDelivery(getDelivery(value))}
+                value={order.delivery}
+                onValueChange={handleDeliveryChange}
                 items={getDeliveries()}
               />
-              <Button variant="contained" onClick={handleDeliveryChange}>
-                Change
-              </Button>
             </Stack>
           )}
           {user?.userRole === Role.EMPLOYEE && (
@@ -109,13 +104,10 @@ export default function Order({ order, refetch }: Props) {
               <Select
                 sx={{ minWidth: 120, mt: 1 }}
                 label="Status"
-                value={status}
-                onValueChange={(value) => setStatus(getStatus(value))}
+                value={order.currentStatus}
+                onValueChange={handleStatusChange}
                 items={getStatuses()}
               />
-              <Button variant="contained" onClick={handleStatusChange}>
-                Change
-              </Button>
             </Stack>
           )}
         </Stack>

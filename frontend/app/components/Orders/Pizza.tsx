@@ -59,7 +59,12 @@ export default function Pizza({ pizza, refetch }: Props) {
           alignItems="center"
         >
           <Typography>
-            Price: <b>{pizza.price}zł</b>
+            Price: <b>{pizza.price}zł</b>{" "}
+            {pizza.quantity && (
+              <span>
+                Quantity: <b>{pizza.quantity}</b>
+              </span>
+            )}
           </Typography>
           <IconButton onClick={handleRemove}>
             <DeleteIcon />

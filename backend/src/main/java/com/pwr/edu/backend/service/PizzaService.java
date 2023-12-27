@@ -136,6 +136,7 @@ public class PizzaService {
                 .name(pizza.getName())
                 .price(pizza.getPrice())
                 .id(pizza.getId())
+                .quantity(pizza.getQuantity())
                 .build();
     }
 
