@@ -1,4 +1,5 @@
 package com.pwr.edu.backend.service;
+
 import com.pwr.edu.backend.domain.dto.PizzaDto;
 import com.pwr.edu.backend.domain.pizza.Bucket;
 import com.pwr.edu.backend.domain.pizza.Delivery;
@@ -14,9 +15,11 @@ import com.pwr.edu.backend.service.calculation.PriceCalculator;
 import com.pwr.edu.backend.service.calculation.SwitchCalculationStrategy;
 import com.pwr.edu.backend.util.EmailBuilder;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.pwr.edu.backend.exceptions.NotFoundException;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -71,14 +74,14 @@ public class PizzaService {
             pizzaRepository.updatePizzaQuantity(lastPizza.getQuantity() + 1, lastPizza.getId());
             pizzaRepository.updatePizzaPrice(currentPrice, lastPizza.getId());
             bucketByEmail.setPrice(currentPrice * lastPizza.getQuantity());
-        } else if (lastPizza != null){
+        } else if (lastPizza != null) {
             bucketByEmail.setPrice(currentPrice * lastPizza.getQuantity());
             bucketRepository.save(bucketByEmail);
             pizzaRepository.save(pizza);
             pizzaRepository.updatePizzaPrice(currentPrice, pizza.getId());
             List<Pizza> pizzaWithZeroPrice = pizzaRepository.findPizzaWithZeroPrice();
             pizzaWithZeroPrice.forEach(el -> pizzaRepository.deleteById(el.getId()));
-        }else{
+        } else {
             bucketRepository.save(bucketByEmail);
             pizzaRepository.save(pizza);
             pizzaRepository.updatePizzaPrice(currentPrice, pizza.getId());
@@ -186,8 +189,10 @@ public class PizzaService {
         List<Pizza> pizzasByUserEmail = pizzaRepository.findPizzasByUserEmail(confirmationToken.getAppUser().getEmail());
         Integer currentPizzaPrice = getCurrentPizzaPrice(pizzasByUserEmail);
         Bucket bucket = bucketRepository.findBucketByEmail(confirmationToken.getAppUser().getEmail()).orElse(null);
-        bucket.setPrice(currentPizzaPrice.intValue());
-        bucketRepository.save(bucket);
+        if (bucket != null) {
+            bucket.setPrice(currentPizzaPrice.intValue());
+            bucketRepository.save(bucket);
+        }
         return bucket;
     }
 
