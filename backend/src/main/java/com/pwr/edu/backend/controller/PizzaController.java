@@ -84,6 +84,19 @@ public class PizzaController {
         return pizzaService.getCurrentPizzaPrice(pizza);
     }
 
+
+    @PostMapping("/increase-pizza-amount")
+    @ResponseStatus(HttpStatus.OK)
+    public Pizza increasePizzaQuantity(@RequestBody Pizza pizza) {
+        return pizzaService.increasePizzaAmount(pizza);
+    }
+
+    @PostMapping("/decrease-pizza-amount")
+    @ResponseStatus(HttpStatus.OK)
+    public Pizza decreasePizzaQuantity(@RequestBody Pizza pizza) {
+        return pizzaService.decrease(pizza);
+    }
+
     private String getJwt(String bearerToken) {
         String jwt = null;
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
