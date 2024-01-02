@@ -33,7 +33,7 @@ public class Bucket {
     private String email;
 
 
-    @OneToMany(mappedBy = "bucket", cascade = CascadeType.MERGE, orphanRemoval = true)
+    @OneToMany(mappedBy = "bucket", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Pizza> pizza = new ArrayList<>();
 
@@ -46,8 +46,8 @@ public class Bucket {
 
     private int price = 0;
 
-    public void addPizza(Pizza pizza) {
-        pizza.setBucket(this);
-        this.pizza.add(pizza);
-    }
+//    public void addPizza(Pizza pizza) {
+//        pizza.setBucket(this);
+//        this.pizza.add(pizza);
+//    }
 }
