@@ -33,7 +33,7 @@ public class Bucket {
     private String email;
 
 
-    @OneToMany(mappedBy = "bucket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "bucket", cascade = CascadeType.MERGE, orphanRemoval = true)
     @JsonIgnore
     private List<Pizza> pizza = new ArrayList<>();
 
