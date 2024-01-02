@@ -129,6 +129,7 @@ export function PizzaToPizzaDto(pizza: Pizza) {
   ).toUpperCase();
 
   return {
+    id: pizza.id || 0,
     name: pizza.name,
     dough: pizza.dough.toUpperCase(),
     size,

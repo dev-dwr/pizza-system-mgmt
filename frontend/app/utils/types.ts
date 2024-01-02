@@ -54,7 +54,7 @@ export enum Delivery {
 }
 
 export type Pizza = {
-  id?: number;
+  id: number;
   name: string;
   dough: Dough;
   size: Size;

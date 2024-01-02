@@ -75,7 +75,14 @@ export default function RegisterForm({ title, onSubmit, register }: Props) {
     if (register && (!nameValid || !lastNameValid || !confirmValid)) return;
     if (!emailValid || !passwordValid) return;
 
-    onSubmit({ firstname, lastname, email, password, userRole: Role.USER });
+    onSubmit({
+      firstname,
+      lastname,
+      email,
+      password,
+      userRole: Role.USER,
+      token: "",
+    });
   };
 
   const isError = (touched: boolean, valid: boolean) =>
