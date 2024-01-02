@@ -51,7 +51,7 @@ public class PizzaService {
             pizza.setPrice(currentPrice);
             pizza.setQuantity(pizza.getQuantity() + 1);
             pizza.setBucket(bucketByEmail);
-            bucketByEmail.addPizza(pizza);
+//            bucketByEmail.addPizza(pizza);
             bucketByEmail.setPrice(currentPrice);
             pizzaRepository.save(pizza);
             bucketRepository.save(bucketByEmail);
@@ -66,7 +66,7 @@ public class PizzaService {
 
             pizza.setQuantity(pizza.getQuantity() + 1);
             pizza.setBucket(bucketByEmail);
-            bucketByEmail.addPizza(pizza);
+//            bucketByEmail.addPizza(pizza);
             bucketByEmail.setPrice(allPrice);
 
             pizzaRepository.save(pizza);
@@ -85,7 +85,7 @@ public class PizzaService {
             pizza.setPrice(pizzaPrice);
             pizza.setBucket(bucketByEmail);
 
-            bucketByEmail.addPizza(pizza);
+//            bucketByEmail.addPizza(pizza);
             bucketByEmail.setPrice(allPrice);
 
             pizzaRepository.save(pizza);
@@ -228,7 +228,7 @@ public class PizzaService {
             pizza.setPrice(pizzaPrice);
             pizza.setBucket(bucketByEmail);
 
-            bucketByEmail.addPizza(pizza);
+//            bucketByEmail.addPizza(pizza);
             bucketByEmail.setPrice(allPrice);
 
             pizzaRepository.save(pizza);
@@ -258,7 +258,7 @@ public class PizzaService {
             pizza.setPrice(pizzaPrice);
             pizza.setBucket(bucketByEmail);
 
-            bucketByEmail.addPizza(pizza);
+//            bucketByEmail.addPizza(pizza);
             bucketByEmail.setPrice(allPrice);
 
             pizzaRepository.save(pizza);
