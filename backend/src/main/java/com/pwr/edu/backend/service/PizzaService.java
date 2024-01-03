@@ -39,7 +39,8 @@ public class PizzaService {
     public Pizza createPizza(Pizza pizza, String jwt) {
         int currentPrice = getCurrentPizzaPrice(List.of(pizza));
 
-        Pizza existingPizza = pizzaRepository.findById(pizza.getId()).orElse(null);
+        Pizza existingPizza = pizzaRepository.findPizzaByName(pizza.getName(), pizza.getDough(), pizza.getSize(), pizza.getSauce());
+
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
         pizza.setUser(confirmationToken.getAppUser());
 
@@ -79,18 +80,17 @@ public class PizzaService {
             pizzaByBucket.forEach(p -> priceInTheBucket.addAndGet(p.getPrice()));
             int allPrice = priceInTheBucket.get() + currentPrice;
 
-            pizza.setQuantity(existingPizza.getQuantity() + 1);
-            int pizzaPrice = currentPrice * pizza.getQuantity();
+            existingPizza.setQuantity(existingPizza.getQuantity() + 1);
+            int pizzaPrice = currentPrice * existingPizza.getQuantity();
 
-            pizza.setPrice(pizzaPrice);
-            pizza.setBucket(bucketByEmail);
+            existingPizza.setPrice(pizzaPrice);
+            existingPizza.setBucket(bucketByEmail);
 
-//            bucketByEmail.addPizza(pizza);
             bucketByEmail.setPrice(allPrice);
 
-            pizzaRepository.save(pizza);
+            pizzaRepository.save(existingPizza);
             bucketRepository.save(bucketByEmail);
-            return pizza;
+            return existingPizza;
         }
 
 
@@ -169,22 +169,29 @@ public class PizzaService {
     public Bucket updateOrder(Bucket order, String jwt) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
         Bucket bucket = bucketRepository.findBucketByEmail(confirmationToken.getAppUser().getEmail()).orElse(null);
+
         assert bucket != null;
+        List<Pizza> pizzaByBucket = pizzaRepository.findPizzaByBucket(bucket.getId());
+
+        AtomicInteger priceInTheBucket = new AtomicInteger();
+        pizzaByBucket.forEach(p -> priceInTheBucket.addAndGet(p.getPrice()));
+        int allPrice = priceInTheBucket.get();
+
         if (order.getDelivery() == Delivery.ON_PIZZA_PLACE) {
-            int price = getCurrentPizzaPrice(bucket.getPizza());
             bucket.setDelivery(order.getDelivery());
-            bucket.setPrice(price);
-            bucketRepository.updatePrice(price, bucket.getId());
+            bucket.setPrice(allPrice);
+            bucketRepository.updatePrice(allPrice, bucket.getId());
+            return bucket;
         }
 
         if (order.getDelivery() == Delivery.ON_YOUR_HOME) {
-            int price = getCurrentPizzaPrice(bucket.getPizza()) + 15;
+            int newP = allPrice + 15;
             bucket.setDelivery(order.getDelivery());
-            bucket.setPrice(price);
-            bucketRepository.updatePrice(price, bucket.getId());
+            bucket.setPrice(newP);
+            bucketRepository.updatePrice(newP, bucket.getId());
+            return bucket;
         }
-
-        return bucket;
+        return null;
     }
 
     @Transactional
