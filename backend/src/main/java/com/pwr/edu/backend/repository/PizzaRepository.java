@@ -17,7 +17,7 @@ public interface PizzaRepository extends JpaRepository<Pizza, Long> {
     @Query("""
                 SELECT p FROM Pizza p WHERE p.name = :name and p.dough = :dough and p.size = :size and p.sauce = :sauce 
             """)
-    List<Pizza> findPizzaByName(String name, Dough dough, Size size, Sauce sauce);
+    Pizza findPizzaByName(String name, Dough dough, Size size, Sauce sauce);
 
     @Query("SELECT p FROM Pizza p WHERE p.user.email = :email")
     List<Pizza> findPizzasByUserEmail(@Param("email") String email);
