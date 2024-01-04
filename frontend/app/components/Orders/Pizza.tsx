@@ -5,14 +5,15 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { Pizza } from "../../utils/types";
 import { useContext, useEffect } from "react";
 import { capitalize } from "../../utils/utils";
 import useHttp from "../../hooks/use-http";
-import { removePizza } from "../../utils/api";
+import { decreasePizza, increasePizza } from "../../utils/api";
 import { UIContext } from "../../store/ui";
 import { enqueueSnackbar } from "notistack";
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
 
 interface Props {
   pizza: Pizza;
@@ -23,18 +24,31 @@ export default function Pizza({ pizza, refetch }: Props) {
   const { user } = useContext(UIContext);
 
   const {
-    sendRequest: remove,
-    status: removeStatus,
-    error: removeError,
-  } = useHttp(removePizza);
+    sendRequest: increase,
+    status: increaseStatus,
+    error: increaseError,
+  } = useHttp(increasePizza);
+
+  const {
+    sendRequest: decrease,
+    status: decreaseStatus,
+    error: decreaseError,
+  } = useHttp(decreasePizza);
 
   useEffect(() => {
-    if (removeStatus === "error")
-      enqueueSnackbar(removeError, { variant: "error" });
-    else if (removeStatus === "success") refetch();
-  }, [removeStatus]);
+    if (increaseStatus === "error")
+      enqueueSnackbar(increaseError, { variant: "error" });
+    else if (increaseStatus === "success") refetch();
+  }, [increaseStatus]);
 
-  const handleRemove = () => remove({ token: user?.token, id: pizza.id });
+  useEffect(() => {
+    if (decreaseStatus === "error")
+      enqueueSnackbar(decreaseError, { variant: "error" });
+    else if (decreaseStatus === "success") refetch();
+  }, [decreaseStatus]);
+
+  const handleIncrease = () => increase({ token: user?.token, pizza });
+  const handleDecrease = () => decrease({ token: user?.token, pizza });
 
   return (
     <Card>
@@ -61,9 +75,20 @@ export default function Pizza({ pizza, refetch }: Props) {
           <Typography>
             Price: <b>{pizza.price}zł</b>
           </Typography>
-          <IconButton onClick={handleRemove}>
-            <DeleteIcon />
-          </IconButton>
+          <Card
+            component={Stack}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <IconButton onClick={handleDecrease}>
+              <RemoveIcon />
+            </IconButton>
+            <Typography variant="h6">{pizza.quantity}</Typography>
+            <IconButton onClick={handleIncrease}>
+              <AddIcon />
+            </IconButton>
+          </Card>
         </Stack>
       </CardContent>
     </Card>

@@ -20,6 +20,7 @@ public class PizzaDto {
     private Sauce sauce;
     private Size size;
     private int price;
+    private int quantity;
     private AppUser appUser;
     private List<Ingredients> ingredientsList;
     private String currentStatus;

@@ -82,6 +82,7 @@ export default function Home() {
         <Stack gap={4}>
           {DEFAULT_PIZZAS.map(({ photo, pizza }) => (
             <DefaultPizza
+              key={pizza.name}
               pizza={pizza}
               photo={photo}
               onAdd={() => handleAdd(pizza)}

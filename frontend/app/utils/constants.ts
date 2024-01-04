@@ -17,6 +17,7 @@ export const DARK_GREY = "#d6c7c8";
 export const BLACK = "#201c21";
 export const WHITE = "#f2efed";
 export const DEFAULT_PIZZA: Pizza = {
+  id: 0,
   name: "",
   dough: Dough.ITALIAN,
   size: Size.MEGA_LARGE,

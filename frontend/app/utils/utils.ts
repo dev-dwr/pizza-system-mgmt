@@ -129,6 +129,7 @@ export function PizzaToPizzaDto(pizza: Pizza) {
   ).toUpperCase();
 
   return {
+    id: pizza.id || 0,
     name: pizza.name,
     dough: pizza.dough.toUpperCase(),
     size,
@@ -150,6 +151,7 @@ export function PizzaDtoToPizza(pizza: any): Pizza {
       .map((ingredient) => getIngredient(ingredient))
       .sort(),
     price: pizza.price,
+    quantity: pizza.quantity,
   };
 }
 

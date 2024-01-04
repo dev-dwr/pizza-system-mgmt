@@ -54,13 +54,14 @@ export enum Delivery {
 }
 
 export type Pizza = {
-  id?: number;
+  id: number;
   name: string;
   dough: Dough;
   size: Size;
   sauce: Sauce;
   ingredientsList: Ingredient[];
   price?: number;
+  quantity?: number;
 };
 
 export type Order = {

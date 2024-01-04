@@ -182,6 +182,56 @@ export async function getPizzaPrice(pizza: Pizza) {
   return data as number;
 }
 
+export async function increasePizza({
+  pizza,
+  token,
+}: {
+  pizza: Pizza;
+  token: string;
+}) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER}/api/v1/increase-pizza-amount`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(PizzaToPizzaDto(pizza)),
+    }
+  );
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message);
+}
+
+export async function decreasePizza({
+  pizza,
+  token,
+}: {
+  pizza: Pizza;
+  token: string;
+}) {
+  if (pizza.quantity === 1) {
+    return removePizza({ token, id: pizza.id });
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER}/api/v1/decrease-pizza-amount`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(PizzaToPizzaDto(pizza)),
+    }
+  );
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message);
+}
+
 export async function retrieveOrders(token?: string) {
   if (token) return retrieveUserOrders(token);
   return retrieveAllOrders();
