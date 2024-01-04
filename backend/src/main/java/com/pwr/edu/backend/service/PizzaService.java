@@ -197,13 +197,7 @@ public class PizzaService {
     @Transactional
     public Bucket getUserOrder(String jwt) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(jwt).orElseThrow(NotFoundException::new);
-        List<Pizza> pizzasByUserEmail = pizzaRepository.findPizzasByUserEmail(confirmationToken.getAppUser().getEmail());
-        Integer currentPizzaPrice = getCurrentPizzaPrice(pizzasByUserEmail);
         Bucket bucket = bucketRepository.findBucketByEmail(confirmationToken.getAppUser().getEmail()).orElse(null);
-        if (bucket != null) {
-            bucket.setPrice(currentPizzaPrice.intValue());
-            bucketRepository.save(bucket);
-        }
         return bucket;
     }
 
